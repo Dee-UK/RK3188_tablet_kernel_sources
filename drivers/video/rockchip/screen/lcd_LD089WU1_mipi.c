@@ -1,7 +1,5 @@
-#ifndef __LCD_LD089WU01__
-#define __LCD_LD089WU01__
-//#ifndef __LCD_B080XAN02__
-//#define __LCD_B080XAN02__
+#ifndef __LCD_LD089WU1__
+#define __LCD_LD089WU1__
 
 #if defined(CONFIG_MIPI_DSI)
 #include "../transmitter/mipi_dsi.h"
