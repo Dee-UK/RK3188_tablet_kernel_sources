@@ -9,8 +9,8 @@
 //#define CT36X_TS_ABS_X_MAX			1280
 //#define CT36X_TS_ABS_Y_MAX			800
 //#else
-#define CT36X_TS_ABS_X_MAX			1920//1024
-#define CT36X_TS_ABS_Y_MAX			1200//768
+#define CT36X_TS_ABS_X_MAX			1024
+#define CT36X_TS_ABS_Y_MAX			768
 //#endif 
 
 /* data structure of point event */

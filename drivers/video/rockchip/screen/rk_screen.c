@@ -1,4 +1,5 @@
 #include <linux/rk_fb.h>
+#include <linux/delay.h>
 #include "lcd.h"
 
 #if defined(CONFIG_RK_HDMI)
@@ -301,9 +302,9 @@ void set_lcd_info(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 	#endif
 
 	msleep(100);
-	lcd_io_init();    
+	/*lcd_io_init();*/
 	msleep(200);
-    	dsi_probe_current_chip();
+    	/*dsi_probe_current_chip();*/
 	msleep(100);
 
 #endif

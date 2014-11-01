@@ -23,9 +23,9 @@ static char const binary_data[]=
 
 //#include "lx46js08_a1_CT363_V01_FE91_130116.dat"
 
-#include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat"
+//#include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat"
 
-
+#include "CT36X_M6PRO.dat"
 
 };
 static char const binary_data_60[]=
