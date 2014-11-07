@@ -489,8 +489,11 @@ static struct sensor_platform_data l3g4200d_info = {
 	.type = SENSOR_TYPE_GYROSCOPE,
 	.irq_enable = 1,
 	.poll_delay_ms = 10,
-	//.orientation = {1, 0, 0 , 0 , -1, 0, 0, 0, -1},
+#if defined(CONFIG_PIPO_M7PRO)
+	.orientation = {1, 0, 0 , 0 , -1, 0, 0, 0, -1},
+#else
 	.orientation = {0, -1, 0 , -1 , 0, 0, 0, 0, -1},
+#endif
 	.init_platform_hw = l3g4200d_init_platform_hw,
 	.x_min = 40,//x_min,y_min,z_min = (0-100) according to hardware
 	.y_min = 40,
@@ -1548,6 +1551,15 @@ static int rk_platform_add_display_devices(void)
 #ifdef CONFIG_I2C0_RK30
 static struct i2c_board_info __initdata i2c0_info[] = {
 
+#if defined (CONFIG_CW2015_BATTERY)
+    {
+        .type           = "cw201x",
+        .addr           = 0x62,
+        .flags          = 0,
+        .platform_data  = &cw_bat_platdata,
+    },
+#endif
+
 #if defined (CONFIG_BATTERY_OZ8806)
 	{
 		.type          = "oz8806",
@@ -1938,14 +1950,14 @@ static struct i2c_board_info __initdata i2c1_info[] = {
     	.platform_data = &tps65910_data,
 	},
 #endif
-#if defined (CONFIG_CW2015_BATTERY)
+/*#if defined (CONFIG_CW2015_BATTERY)
     {
         .type           = "cw201x",
         .addr           = 0x62,
         .flags          = 0,
         .platform_data  = &cw_bat_platdata,
     },
-#endif
+#endif*/
 };
 #endif
 
@@ -2041,6 +2053,17 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 		.platform_data = &ct36x_info,
 	},
 #endif
+
+#if defined(CONFIG_HDMI_CAT66121) && defined(CONFIG_PIPO_M7PRO)
+	{
+		.type		= "cat66121_hdmi",
+		.addr		= 0x4c,
+		.flags		= 0,
+		.irq		= RK30_PIN2_PD6,
+		.platform_data 	= &rk_hdmi_pdata,
+	},
+#endif
+
 #if defined (CONFIG_LS_CM3217)
 	{
 		.type          = "lightsensor",
@@ -2077,7 +2100,7 @@ static struct i2c_board_info __initdata i2c3_info[] = {
 
 #ifdef CONFIG_I2C4_RK30
 static struct i2c_board_info __initdata i2c4_info[] = {
-#if defined(CONFIG_HDMI_CAT66121)
+#if defined(CONFIG_HDMI_CAT66121) && !defined(CONFIG_PIPO_M7PRO)
 	{
 		.type		= "cat66121_hdmi",
 		.addr		= 0x4c,
@@ -2116,6 +2139,14 @@ static struct i2c_board_info __initdata i2c4_info[] = {
 			.platform_data		= &rk610_codec_pdata,			
 		},
 #endif
+#endif
+
+#if defined (CONFIG_SND_SOC_RT5616)
+        {
+                .type                   = "rt5616",
+                .addr                   = 0x1b,
+                .flags                  = 0,
+        },
 #endif
 
 #if defined (CONFIG_SND_SOC_RT5631)

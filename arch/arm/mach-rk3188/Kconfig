@@ -37,3 +37,18 @@ config MACH_RK3188_FAC
         select MACH_RK_FAC
 
 endchoice
+
+choice
+	prompt "RK3188 Tablet Type"
+	depends on MACH_RK3188_DS1006H
+
+config PIPO_M8HD
+        bool "Pipo M8HD"
+
+config PIPO_M7PRO
+	bool "Pipo M7Pro"
+        
+config PIPO_M9PRO
+        bool "Pipo M9Pro"
+
+endchoice

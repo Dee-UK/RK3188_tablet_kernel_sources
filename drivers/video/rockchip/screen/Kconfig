@@ -183,10 +183,23 @@ config LCD_WY_800X480
 
 config LCD_HH070D_LVDS
 	bool "lcd lvds for 760"
+
 config LCD_RK3028_86V
         bool "RGB 1024*600 for RK3028 86V"
-config LCD_LD089WU1_MIPI
+
+config LCD_LD089WU1_MIPI_M8HD
+	bool "mipi dsi lcd M8HD 1920X1200"
+	---help---
+	Pipo M8HD support
+
+config LCD_LD089WU1_MIPI_M7PRO
 	bool "mipi dsi lcd LD089WU1 1920X1200"
+	---help---
+	Pipo M7Pro support
+
+config LCD_MIPI_1024x768_U8
+	bool "mipi dsi lcd for Pipo U8"
+
 config LCD_B080XAN02_MIPI
 	bool "mipi dsi lcd B080XAN02 1024X768"	
 config LCD_RK3168_FAC
