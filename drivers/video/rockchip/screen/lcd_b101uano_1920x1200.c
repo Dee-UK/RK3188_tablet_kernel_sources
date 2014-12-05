@@ -8,6 +8,7 @@
 #include <mach/board.h>
 #include <mach/gpio.h>
 #include <mach/io.h>
+#include <linux/delay.h>
 
 static struct rk29lcd_info *gLcd_info = NULL;
 //int lcd_init(void);

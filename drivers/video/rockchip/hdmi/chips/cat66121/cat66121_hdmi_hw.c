@@ -180,11 +180,17 @@ int cat66121_detect_device(void)
 			VendorID0, VendorID1, DeviceID0, DeviceID1);
 	if( (VendorID0 == 0x54) && (VendorID1 == 0x49))
 	   //    	&&(DeviceID0 == 0x12) && (DeviceID1 == 0x16) )
+	{
+		printk("[CAT66121] Device found!\n");
 		return 1;
-
+	}
 	printk("[CAT66121] Device not found!\n");
 
+#if defined(CONFIG_MACH_RK3188_U30GT2) //fiddle for CAT6611
+	return 1;
+#else
 	return 0;
+#endif
 }
 int cat66121_hdmi_sys_init(void)
 {

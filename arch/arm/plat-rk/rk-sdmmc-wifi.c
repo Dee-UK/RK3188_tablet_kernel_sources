@@ -444,13 +444,11 @@ static int __init rk29sdk_wifi_bt_gpio_control_init(void)
     gpio_request(rksdmmc1_gpio_init.data3_gpio.io, "mmc1-data3");
     gpio_direction_output(rksdmmc1_gpio_init.data3_gpio.io,GPIO_LOW);//set mmc1-data3 to low.
     #endif
-    
-    rk29_sdmmc_gpio_open(1, 0); //added by xbw at 2011-10-13
+     rk29_sdmmc_gpio_open(1, 0); //added by xbw at 2011-10-13
     #endif
 #endif//--#else //--#if defined(CONFIG_ARCH_RK319X) 
 
     pr_info("%s: init finished\n",__func__);
-
     return 0;
 }
 
@@ -643,7 +641,7 @@ EXPORT_SYMBOL(rk29sdk_wifi_combo_get_GPS_SYNC_gpio);
     };
     static void __init mtk_combo_init(void)
     {
-        /* gpio number align target system¡¯s setting */
+        /* gpio number align target system\A1\AFs setting */
         gpio_request(mtk_wmt_pdata.pmu, "MT66XX PMUEN");
         gpio_request(mtk_wmt_pdata.rst, "MT66XX SYSRST");
         gpio_direction_output(mtk_wmt_pdata.pmu, 0);

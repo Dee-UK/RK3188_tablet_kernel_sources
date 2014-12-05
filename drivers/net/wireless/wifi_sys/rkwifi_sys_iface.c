@@ -1,4 +1,3 @@
-
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -455,11 +454,12 @@ static int wifi_driver_insmod = 0;
 
 static ssize_t wifi_driver_write(struct class *cls, struct class_attribute *attr, const char *_buf, size_t _count)
 {
+    printk (KERN_INFO, "D33 wifi driver write entered");
     int enable = 0, ret = 0;
 #ifndef CONFIG_MTK_COMBO_MT66XX
     down(&driver_sem);
     enable = simple_strtol(_buf, NULL, 10);
-    //printk("%s: enable = %d\n", __func__, enable);
+    printk("%s: enable = %d\n", __func__, enable);
     if (wifi_driver_insmod == enable) {
         printk("%s: wifi driver already %s\n", __func__, enable? "insmod":"rmmod");
         up(&driver_sem);
@@ -513,6 +513,7 @@ int rkwifi_sysif_init(void)
 #endif
     ret =  class_create_file(rkwifi_class, &class_attr_power);
     ret =  class_create_file(rkwifi_class, &class_attr_driver);
+    
     sema_init(&driver_sem, 1);
     
     return 0;

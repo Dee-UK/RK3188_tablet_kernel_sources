@@ -32,7 +32,7 @@
 #define I2C_SPEED 200*1000
 #define MAX_POINT  5
 
-#if defined (CONFIG_TOUCHSCREEN_1024X768)
+/*#if defined (CONFIG_TOUCHSCREEN_1024X768)
 #define SCREEN_MAX_X 1024
 #define SCREEN_MAX_Y 768
 #elif defined (CONFIG_TOUCHSCREEN_1024X600)
@@ -47,7 +47,10 @@
 #else
 #define SCREEN_MAX_X 800
 #define SCREEN_MAX_Y 480
-#endif
+#endif*/
+
+#define SCREEN_MAX_X 1920
+#define SCREEN_MAX_Y 1200
 
 #define PRESS_MAX 200
 

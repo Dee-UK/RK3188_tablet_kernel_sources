@@ -1551,6 +1551,7 @@ static int rk_platform_add_display_devices(void)
 #ifdef CONFIG_I2C0_RK30
 static struct i2c_board_info __initdata i2c0_info[] = {
 
+#if defined(CONFIG_PIPO_M7PRO)
 #if defined (CONFIG_CW2015_BATTERY)
     {
         .type           = "cw201x",
@@ -1558,6 +1559,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
         .flags          = 0,
         .platform_data  = &cw_bat_platdata,
     },
+#endif
 #endif
 
 #if defined (CONFIG_BATTERY_OZ8806)
@@ -1950,14 +1952,16 @@ static struct i2c_board_info __initdata i2c1_info[] = {
     	.platform_data = &tps65910_data,
 	},
 #endif
-/*#if defined (CONFIG_CW2015_BATTERY)
+#if !defined(CONFIG_PIPO_M7PRO)
+#if defined (CONFIG_CW2015_BATTERY)
     {
         .type           = "cw201x",
         .addr           = 0x62,
         .flags          = 0,
         .platform_data  = &cw_bat_platdata,
     },
-#endif*/
+#endif
+#endif
 };
 #endif
 

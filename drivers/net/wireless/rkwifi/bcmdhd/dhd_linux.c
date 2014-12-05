@@ -4890,6 +4890,7 @@ dhd_module_init(void)
 #endif 
 
 	DHD_TRACE(("%s: Enter\n", __FUNCTION__));
+	printk(KERN_INFO "%s: (D33) Enter\n", __FUNCTION__);
 
 	wl_android_init();
 

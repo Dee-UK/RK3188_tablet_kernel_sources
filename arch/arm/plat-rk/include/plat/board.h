@@ -455,6 +455,8 @@ struct eeti_egalax_platform_data {
 struct ts_hw_data {
 	int reset_gpio;
 	int touch_en_gpio;
+	int max_x;
+	int max_y;
 	int (*init_platform_hw)(void);
 };
 
@@ -574,7 +576,7 @@ void __sramfunc board_pmu_resume(void);
  * For DDR frequency scaling setup. Board code something like this:
  *
  * This array _must_ be sorted in ascending frequency (without DDR_FREQ_*) order.
- * 必须按频率（不必考虑DDR_FREQ_*）递增�? *static struct cpufreq_frequency_table dvfs_ddr_table[] = {
+ * 必须按频率（不必考虑DDR_FREQ_*）递增\E3\80? *static struct cpufreq_frequency_table dvfs_ddr_table[] = {
  *	{.frequency = 200 * 1000 + DDR_FREQ_SUSPEND,	.index = xxxx * 1000},
  *	{.frequency = 200 * 1000 + DDR_FREQ_IDLE,	.index = xxxx * 1000},
  *	{.frequency = 300 * 1000 + DDR_FREQ_VIDEO,	.index = xxxx * 1000},

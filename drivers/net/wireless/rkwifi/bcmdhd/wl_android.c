@@ -1856,7 +1856,8 @@ int wifi_get_irq_number(unsigned long *irq_flags_ptr)
 int wifi_set_power(int on, unsigned long msec)
 {
 	int ret = 0;
-	ANDROID_ERROR(("%s = %d\n", __FUNCTION__, on));
+//	ANDROID_ERROR(("%s = %d\n", __FUNCTION__, on));
+	printk(KERN_INFO "%s = %d\n", __FUNCTION__, on);
 	if (wifi_regulator && on)
 		ret = regulator_enable(wifi_regulator);
 	if (wifi_control_data && wifi_control_data->set_power) {
@@ -1886,7 +1887,8 @@ int wifi_set_power(int on, unsigned long msec)
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35))
 int wifi_get_mac_addr(unsigned char *buf)
 {
-	ANDROID_ERROR(("%s\n", __FUNCTION__));
+	//ANDROID_ERROR(("%s\n", __FUNCTION__));
+	printk (KERN_INFO "%s\n", __FUNCTION__);
 	if (!buf)
 		return -EINVAL;
 	if (wifi_control_data && wifi_control_data->get_mac_addr) {

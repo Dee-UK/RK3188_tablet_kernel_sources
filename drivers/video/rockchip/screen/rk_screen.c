@@ -303,7 +303,9 @@ void set_lcd_info(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 	msleep(100);
 	lcd_io_init();    
 	msleep(200);
+#if defined(CONFIG_MIPI_DSI)
     	dsi_probe_current_chip();
+#endif
 	msleep(100);
 
 #endif
