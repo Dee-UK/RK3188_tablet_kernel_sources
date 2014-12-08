@@ -63,6 +63,7 @@ source "fs/quota/Kconfig"
 
 source "fs/autofs4/Kconfig"
 source "fs/fuse/Kconfig"
+source "fs/fuse-exfat/Kconfig"
 
 config CUSE
 	tristate "Character device in Userspace support"
@@ -99,6 +100,7 @@ menu "DOS/FAT/NT Filesystems"
 
 source "fs/fat/Kconfig"
 source "fs/ntfs/Kconfig"
+source "fs/exfat-nofuse/Kconfig"
 
 endmenu
 endif # BLOCK

@@ -1,0 +1,7 @@
+config FUSE_EXFAT
+	tristate "Fuse based exFAT filesystem support"
+	depends on FUSE_FS
+	help
+	  This is a FUSE based exFAT driver.
+
+

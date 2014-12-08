@@ -197,6 +197,11 @@ config LCD_LD089WU1_MIPI_M7PRO
 	---help---
 	Pipo M7Pro support
 
+config LCD_CLAA101FP01_MIPI_M9PRO
+	bool "mipi dsi lcd CLAA101FP01 1920x1200"
+	---help---
+	Pipo M9Pro support
+
 config LCD_MIPI_1024x768_U8
 	bool "mipi dsi lcd for Pipo U8"
 
