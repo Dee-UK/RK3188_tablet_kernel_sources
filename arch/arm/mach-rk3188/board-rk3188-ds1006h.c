@@ -50,7 +50,7 @@
 #include <linux/regulator/rk29-pwm-regulator.h>
 #include <plat/ddr.h>
 
-#if defined(CONFIG_CT36X_TS)
+#if defined(CONFIG_CT36X_TS)||(CONFIG_TOUCHSCREEN_CT36X)
 #include <linux/ct36x.h>
 #endif
 #if defined(CONFIG_MFD_RK610)
@@ -146,11 +146,11 @@ int get_harware_version()
 }
 EXPORT_SYMBOL_GPL(get_harware_version);
 
-#if defined(CONFIG_CT36X_TS)
+#if defined(CONFIG_CT36X_TS) || (CONFIG_TOUCHSCREEN_CT36X)
 
 #define TOUCH_MODEL		363
-#define TOUCH_MAX_X		1920//1280
-#define TOUCH_MAX_y		1200//800
+#define TOUCH_MAX_X		1920
+#define TOUCH_MAX_y		1200
 #define TOUCH_RESET_PIN		RK30_PIN0_PB6
 #define TOUCH_INT_PIN		RK30_PIN1_PB7
 
@@ -317,8 +317,8 @@ static struct sensor_platform_data lis3dh_info = {
 	.irq_enable = 1,
 	.poll_delay_ms = 30,
         .init_platform_hw = lis3dh_init_platform_hw,
-	//.orientation = {-1, 0, 0, 0, 1, 0, 0, 0, -1},
-	.orientation = {0, 1, 0, 1, 0, 0, 0, 0, -1,},
+	.orientation = {-1, 0, 0, 0, 1, 0, 0, 0, -1},
+//	.orientation = {-1, 0, 0, 0, -1, 0, 0, 0, -1}, //M7PRO
 };
 #endif
 
@@ -490,7 +490,8 @@ static struct sensor_platform_data l3g4200d_info = {
 	.irq_enable = 1,
 	.poll_delay_ms = 10,
 #if defined(CONFIG_PIPO_M7PRO)
-	.orientation = {1, 0, 0 , 0 , -1, 0, 0, 0, -1},
+	.orientation = {-1, 0, 0 , 0 , 1, 0, 0, 0, -1},
+//	.orientation = {1, 0, 0 , 0 , -1, 0, 0, 0, -1},
 #else
 	.orientation = {0, -1, 0 , -1 , 0, 0, 0, 0, -1},
 #endif
@@ -2049,7 +2050,7 @@ void  rk30_pwm_resume_voltage_set(void)
 
 #ifdef CONFIG_I2C2_RK30
 static struct i2c_board_info __initdata i2c2_info[] = {
-#if defined (CONFIG_CT36X_TS)
+#if defined (CONFIG_CT36X_TS) || (CONFIG_TOUCHSCREEN_CT36X)
 	{
 		.type	       = CT36X_NAME,
 		.addr          = 0x01,

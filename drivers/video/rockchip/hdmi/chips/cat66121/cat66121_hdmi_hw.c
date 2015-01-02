@@ -183,7 +183,13 @@ int cat66121_detect_device(void)
 	{
 		printk("[CAT66121] Device found!\n");
 		return 1;
-	}
+	} else
+		if( (VendorID0 == 0x00) && (VendorID1 == 0xca))
+		{
+			printk("[CAT6611] Device found!\n");
+			return 1;
+		};
+
 	printk("[CAT66121] Device not found!\n");
 
 #if defined(CONFIG_MACH_RK3188_U30GT2) //fiddle for CAT6611

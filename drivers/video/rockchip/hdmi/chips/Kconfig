@@ -27,6 +27,10 @@ if HDMI_CAT66121
 source "drivers/video/rockchip/hdmi/chips/cat66121/Kconfig"
 endif
 
+config HDMI_CAT6611
+	bool "ITE HDMI transmitter IT6610 support"
+	
+
 config  HDMI_RK610
         bool "RK610 HDMI support"
         depends on MFD_RK610

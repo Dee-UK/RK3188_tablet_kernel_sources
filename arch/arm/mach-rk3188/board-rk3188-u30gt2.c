@@ -419,6 +419,25 @@ static struct sensor_platform_data mma8452_info = {
         .orientation = {-1, 0, 0, 0, -1, 0, 0, 0, 1},
 };
 #endif
+
+#if defined (CONFIG_GS_LSM303D)
+#define LSM303D_INT_PIN   RK30_PIN0_PB7 //GPIO 175
+static int lsm303d_init_platform_hw(void)
+{
+	return 0;
+}
+
+static struct sensor_platform_data lsm303d_data = {
+	.type = SENSOR_TYPE_ACCEL,
+	.irq_enable = 1,
+	.poll_delay_ms = 30,
+        .init_platform_hw = lsm303d_init_platform_hw,
+// orientation = first set - up/down (x), second set right/left(Y), third set (z)
+//	.orientation = {0, -1, 0, -1, 0, 0, 0, 0, -1},//orig - up +90deg, right +90 deg, down +90, left +90
+	.orientation = {1, 0, 0, 0, -1, 0, 0, 0, -1},
+};
+#endif
+
 #if defined (CONFIG_GS_LIS3DH)
 #define LIS3DH_INT_PIN   RK30_PIN0_PB7
 
@@ -433,7 +452,7 @@ static struct sensor_platform_data lis3dh_info = {
 	.irq_enable = 1,
 	.poll_delay_ms = 30,
         .init_platform_hw = lis3dh_init_platform_hw,
-	// .orientation = {0, -1, 0, 0, 0, -1, -1, 0, 0},
+	//.orientation = {0, -1, 0, 0, 0, -1, -1, 0, 0},
 	.orientation = {0, -1, 0, -1, 0, 0, 0, 0, -1},
 };
 #endif
@@ -1575,13 +1594,18 @@ static int rk_platform_add_display_devices(void)
 // i2c
 #ifdef CONFIG_I2C0_RK30
 static struct i2c_board_info __initdata i2c0_info[] = {
+
 #if defined (CONFIG_GS_LSM303D)
-        {
-            .type           = "lsm303d",
-            .addr           = 0x1d,   //0x19(SA0-->VCC), 0x18(SA0-->GND)
-            .flags          = 0,
-        },
+	{
+
+		.type                   = "gs_lsm303d", //"lsm303d",
+		.addr                   = 0x19,   //0x19(SA0-->VCC), 0x18(SA0-->GND)
+		.irq			= LSM303D_INT_PIN,
+		.flags                  = 0,
+		.platform_data          =&lsm303d_data, 
+	},
 #endif
+
 #if defined (CONFIG_GS_MMA8452)
 	{
 		.type	        = "gs_mma8452",
@@ -1591,6 +1615,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.platform_data = &mma8452_info,
 	},
 #endif
+
 #if defined (CONFIG_GS_LIS3DH)
 	{
 		.type	        = "gs_lis3dh",
@@ -1600,6 +1625,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.platform_data = &lis3dh_info,
 	},
 #endif
+
 #if defined (CONFIG_COMPASS_AK8975)
 	{
 		.type          = "ak8975",
@@ -1609,6 +1635,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.platform_data = &akm8975_info,
 	},
 #endif
+
 #if defined (CONFIG_GYRO_L3G20D)
 	{
 		.type          = "l3g20d_gryo",
@@ -1618,6 +1645,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.platform_data = &l3g20d_info,
 	},
 #endif
+
 #if defined (CONFIG_SND_SOC_RK1000)
 	{
 		.type          = "rk1000_i2c_codec",
@@ -1630,6 +1658,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.flags         = 0,
 	},
 #endif
+
 #if defined (CONFIG_SND_SOC_RT5631)
         {
                 .type                   = "rt5631",
@@ -1637,6 +1666,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
                 .flags                  = 0,
         },
 #endif
+
 #if defined (CONFIG_SND_RK29_SOC_ES8323)
 				{
                 .type                   = "es8323",//"es8323",
@@ -2463,39 +2493,17 @@ static void __init rk30_reserve(void)
  * @cpu_volt	: arm voltage depend on frequency
  */
 
-#if 0
-//sdk
-static struct cpufreq_frequency_table dvfs_arm_table_volt_level0[] = {
-        {.frequency = 312 * 1000,       .index = 850 * 1000},
-        {.frequency = 504 * 1000,       .index = 900 * 1000},
-        {.frequency = 816 * 1000,       .index = 950 * 1000},
-        {.frequency = 1008 * 1000,      .index = 1025 * 1000},
-        {.frequency = 1200 * 1000,      .index = 1100 * 1000},
-        {.frequency = 1416 * 1000,      .index = 1200 * 1000},
-        {.frequency = 1608 * 1000,      .index = 1300 * 1000},
-        {.frequency = CPUFREQ_TABLE_END},
-};
-//default
-static struct cpufreq_frequency_table dvfs_arm_table_volt_level1[] = {
-        {.frequency = 312 * 1000,       .index = 875 * 1000},
-        {.frequency = 504 * 1000,       .index = 925 * 1000},
-        {.frequency = 816 * 1000,       .index = 975 * 1000},
-        {.frequency = 1008 * 1000,      .index = 1075 * 1000},
-        {.frequency = 1200 * 1000,      .index = 1150 * 1000},
-        {.frequency = 1416 * 1000,      .index = 1250 * 1000},
-        {.frequency = 1608 * 1000,      .index = 1350 * 1000},
-        {.frequency = CPUFREQ_TABLE_END},
-};
-#endif
-// cube 10'
 static struct cpufreq_frequency_table dvfs_arm_table_volt_level2[] = {
         {.frequency = 312 * 1000,       .index = 900 * 1000},
         {.frequency = 504 * 1000,       .index = 925 * 1000},
         {.frequency = 816 * 1000,       .index = 1000 * 1000},
-        {.frequency = 1008 * 1000,      .index = 1075 * 1000},
-        {.frequency = 1200 * 1000,      .index = 1200 * 1000},
-        {.frequency = 1416 * 1000,      .index = 1250 * 1000},
-        {.frequency = 1608 * 1000,      .index = 1350 * 1000},
+        {.frequency = 1008 * 1000,      .index = 1050 * 1000},//1075
+        {.frequency = 1200 * 1000,      .index = 1150 * 1000},//1200
+        {.frequency = 1416 * 1000,      .index = 1200 * 1000},//1250
+        {.frequency = 1608 * 1000,      .index = 1300 * 1000},//1350
+        {.frequency = 1704 * 1000,      .index = 1350 * 1000},
+   //	11{.frequency = 1800 * 1000,      .index = 1375 * 1000},
+	
         {.frequency = CPUFREQ_TABLE_END},
 };
 //if you board is good for volt quality,select dvfs_arm_table_volt_level0
@@ -2504,47 +2512,21 @@ static struct cpufreq_frequency_table dvfs_arm_table_volt_level2[] = {
 /******************************** gpu dvfs frequency volt table **********************************/
 //sdk
 static struct cpufreq_frequency_table dvfs_gpu_table_volt_level0[] = {	
-#if defined(CONFIG_ARCH_RK3188)
         {.frequency = 133 * 1000,       .index = 975 * 1000},//the mininum rate is limited 133M for rk3188
-#elif defined(CONFIG_ARCH_RK3066B)
-	{.frequency = 100 * 1000, 	.index = 950 * 1000},//the minimum rate is no limit for rk3168 rk3066B
-#endif
-
-	{.frequency = 200 * 1000,       .index = 1025 * 1000},
-	{.frequency = 266 * 1000,       .index = 1025 * 1000},
-	{.frequency = 300 * 1000,       .index = 1050 * 1000},
-	{.frequency = 400 * 1000,       .index = 1100 * 1000},
-	{.frequency = 600 * 1000,       .index = 1250 * 1000},
+	{.frequency = 200 * 1000,       .index = 975 * 1000},//1025
+	{.frequency = 266 * 1000,       .index = 975 * 1000},//1025
+	{.frequency = 300 * 1000,       .index = 1000 * 1000},//1050
+	{.frequency = 400 * 1000,       .index = 1050 * 1000},//1100
+	{.frequency = 600 * 1000,       .index = 1200 * 1000},//1250
         {.frequency = CPUFREQ_TABLE_END},
 };
-#if 0
-//cube 10'
-static struct cpufreq_frequency_table dvfs_gpu_table_volt_level1[] = {	
-#if defined(CONFIG_ARCH_RK3188)
-        {.frequency = 133 * 1000,       .index = 975 * 1000},//the mininum rate is limited 133M for rk3188
-#elif defined(CONFIG_ARCH_RK3066B)
-	{.frequency = 100 * 1000, 	.index = 950 * 1000},//the minimum rate is no limit for rk3168 rk3066B
-#endif
-
-	{.frequency = 200 * 1000,       .index = 1000 * 1000},
-	{.frequency = 266 * 1000,       .index = 1025 * 1000},
-	{.frequency = 300 * 1000,       .index = 1050 * 1000},
-	{.frequency = 400 * 1000,       .index = 1100 * 1000},
-	{.frequency = 600 * 1000,       .index = 1250 * 1000},
-        {.frequency = CPUFREQ_TABLE_END},
-};
-#endif
 
 #define dvfs_gpu_table dvfs_gpu_table_volt_level0
-
 /******************************** ddr dvfs frequency volt table **********************************/
 static struct cpufreq_frequency_table dvfs_ddr_table_volt_level0[] = {
-#if defined(CONFIG_ARCH_RK3188)
 	{.frequency = 200 * 1000 + DDR_FREQ_SUSPEND,    .index = 950 * 1000},
 //	{.frequency = 300 * 1000 + DDR_FREQ_VIDEO,      .index = 1000 * 1000},
-#endif
-	{.frequency = 528* 1000 + DDR_FREQ_NORMAL,     .index = 1250 * 1000},
-//	{.frequency = 400 * 1000 + DDR_FREQ_NORMAL,     .index = 1200 * 1000},
+	{.frequency = 667 * 1000 + DDR_FREQ_NORMAL,     .index = 1250 * 1000},//528@1250
 	{.frequency = CPUFREQ_TABLE_END},
 };
 

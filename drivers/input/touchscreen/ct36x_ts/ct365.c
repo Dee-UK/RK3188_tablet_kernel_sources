@@ -17,25 +17,18 @@
 
 static char const binary_data[]=
 {
-	
-	
-
-
 //#include "lx46js08_a1_CT363_V01_FE91_130116.dat"
-
 #include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat"
-
-
-
+//#include "Five_F304_89_1920_1200_CT363_V06_03C2_130403.dat"
 };
+
 static char const binary_data_60[]=
 {
-	
-	
 //#include "lx46js08_a1_CT363_V01_FE91_130116.dat"
 #include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat"
-
+//#include "Five_F304_89_1920_1200_CT363_V06_03C2_130403.dat"
 };
+
 static void ct36x_chip_set_idle(struct i2c_client *client, unsigned char *buf)
 {
 	if ( CT36X_TS_CHIP_DEBUG )
