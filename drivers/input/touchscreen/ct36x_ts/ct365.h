@@ -5,9 +5,9 @@
 /* max touch points supported */
 #define CT36X_TS_POINT_NUM			10
 
-#ifdef  CONFIG_LCD_B101EW05 
-#define CT36X_TS_ABS_X_MAX			1280
-#define CT36X_TS_ABS_Y_MAX			800
+#ifdef  CONFIG_PIPO_M6PRO 
+#define CT36X_TS_ABS_X_MAX			1024//1280
+#define CT36X_TS_ABS_Y_MAX			768//800
 #else
 #define CT36X_TS_ABS_X_MAX			1920
 #define CT36X_TS_ABS_Y_MAX			1200
