@@ -111,7 +111,7 @@ static struct rk29_keys_button key_button[] = {
 		.active_low = PRESS_LEV_LOW,
 		.wakeup	= 1,
 	},
-	{
+		{
 		.desc	= "menu",
 		.code	= EV_MENU,
 		.adc_value	= 159,
@@ -199,19 +199,20 @@ static struct spi_board_info board_spi_devices[] = {
 #ifdef  LCD_DISP_ON_PIN
 #define BL_EN_PIN         RK30_PIN0_PA2
 #define BL_EN_VALUE       GPIO_HIGH
-
 #endif
+
 #define HUB_RST
 #ifdef  HUB_RST
 #define HUB_RST_PIN RK30_PIN0_PC2
 #endif
+
 static int rk29_backlight_io_init(void)
 {
 	int ret = 0;
 
 	iomux_set(PWM_MODE);
 #ifdef  LCD_DISP_ON_PIN
-	ret = gpio_request(BL_EN_PIN, NULL);
+	ret = gpio_request(BL_EN_PIN, NULL); //"bl_en"
 	if (ret != 0) {
 		gpio_free(BL_EN_PIN);
 	}
@@ -219,7 +220,7 @@ static int rk29_backlight_io_init(void)
 	gpio_direction_output(BL_EN_PIN, 0);
 	gpio_set_value(BL_EN_PIN, BL_EN_VALUE);
 #ifdef  HUB_RST
-ret = gpio_request(HUB_RST_PIN, NULL);
+	ret = gpio_request(HUB_RST_PIN, NULL);
 	if (ret != 0) {
 		gpio_free(HUB_RST_PIN);
 	}
@@ -236,29 +237,33 @@ static int rk29_backlight_io_deinit(void)
 	int ret = 0, pwm_gpio;
 
 #ifdef  LCD_DISP_ON_PIN
+	gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);
 	gpio_free(BL_EN_PIN);
 #endif
 
 	pwm_gpio = iomux_mode_to_gpio(PWM_MODE);
-	gpio_request(pwm_gpio, NULL);
+	gpio_request(pwm_gpio, "bl_pwm"); // NULL
 	gpio_direction_output(pwm_gpio, GPIO_LOW);
 	return ret;
 }
 
 static int rk29_backlight_pwm_suspend(void)
 {
-	int ret = 0, pwm_gpio;
+	int ret, pwm_gpio;
 
-	pwm_gpio = iomux_mode_to_gpio(PWM_MODE);
-	if (gpio_request(pwm_gpio, NULL)) {
+	pwm_gpio = iomux_mode_to_gpio(PWM_MODE);//PWM_MODE = PWM3
+	ret = gpio_request(pwm_gpio, NULL);
+	if (ret) {
 		printk("func %s, line %d: request gpio fail\n", __FUNCTION__, __LINE__);
-		return -1;
-	}
-	gpio_direction_output(pwm_gpio, GPIO_LOW);
+	} else
+	{
+		gpio_direction_output(pwm_gpio, GPIO_LOW);
 #ifdef  LCD_DISP_ON_PIN
-	gpio_direction_output(BL_EN_PIN, 0);
-	gpio_set_value(BL_EN_PIN, !BL_EN_VALUE);
+		gpio_direction_output(BL_EN_PIN, 0);
+		gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);//d33
+		gpio_set_value(BL_EN_PIN, !BL_EN_VALUE);
 #endif
+	}
 	return ret;
 }
 
@@ -340,7 +345,8 @@ static struct sensor_platform_data lis3dh_info = {
 	.orientation = {-1, 0, 0, 0, 1, 0, 0, 0, -1},
 #endif
 };
-#endif
+
+#endif //(CONFIG_GS_LIS3DH)
 
 #if defined (CONFIG_COMPASS_AK8963)
 static struct sensor_platform_data akm8963_info =
@@ -379,7 +385,7 @@ static struct sensor_platform_data akm8963_info =
        .type = SENSOR_TYPE_COMPASS,
        .irq_enable = 1,
        //.poll_delay_ms = 0,
-       .layout = 8,	//8963÷ª–Ë“™∏ƒ’‚∏ˆ÷µæÕ––¡À°£æÿ’Û–Ë“™πÃ∂®°£≤ª“™–ﬁ∏ƒæÿ’Û
+       .layout = 8,	//8963√ñ¬ª√ê√®√í¬™≈æ√Ñ√ï√¢≈æ√∂√ñ¬µ≈∏√ç√ê√ê√Å√ã¬°¬£≈∏√ò√ï√≥√ê√®√í¬™¬π√å¬∂≈°¬°¬£¬≤¬ª√í¬™√ê√û≈æ√Ñ≈∏√ò√ï√≥
        .m_layout =
        {
 			   {
@@ -584,16 +590,16 @@ static struct platform_device device_ssd2828 = {
 #endif
 
 #if DS1006H_V1_2_SUPPORT
-#define LCD_CS_PIN         RK30_PIN0_PB0
+#define LCD_CS_PIN         INVALID_GPIO//RK30_PIN0_PB0
 #else
-#define LCD_CS_PIN         INVALID_GPIO
+#define LCD_CS_PIN         INVALID_GPIO//RK30_PIN1_PB6//(u30gt2)
 #endif
 #define LCD_CS_VALUE       GPIO_HIGH
 
 #if DS1006H_V1_2_SUPPORT
 #define LCD_EN_PIN         RK30_PIN0_PB0//RK30_PIN0_PB1
 #else
-#define LCD_EN_PIN         INVALID_GPIO
+#define LCD_EN_PIN         INVALID_GPIO//RK30_PIN0_PB0
 #endif
 
 #if defined (CONFIG_PIPO_M6PRO)
@@ -601,6 +607,15 @@ static struct platform_device device_ssd2828 = {
 #else
 #define LCD_EN_VALUE       GPIO_LOW
 #endif
+
+#define LCD_PWR_PIN         RK30_PIN1_PB5
+#define LCD_PWR_VALUE       GPIO_HIGH
+
+#define LCD_CS_PIN_1         RK30_PIN3_PD4
+#define LCD_CS_VALUE_1       GPIO_HIGH
+
+#define LCD_PWR_PIN_1         RK30_PIN0_PA7
+#define LCD_PWR_VALUE_1       GPIO_HIGH
 
 static int rk_fb_io_init(struct rk29_fb_setting_info *fb_setting)
 {
@@ -621,6 +636,23 @@ static int rk_fb_io_init(struct rk29_fb_setting_info *fb_setting)
 		}
 	}
 
+	if(LCD_CS_PIN_1 !=INVALID_GPIO)
+	{
+		ret = gpio_request(LCD_CS_PIN_1, NULL);
+		if (ret != 0)
+		{
+			gpio_free(LCD_CS_PIN_1);
+			printk(KERN_ERR "request lcd cs pin fail!\n");
+			return -1;
+		}
+		else
+		{
+			gpio_direction_output(LCD_CS_PIN_1, LCD_CS_VALUE_1);
+		}
+	}
+
+
+
 	if(LCD_EN_PIN !=INVALID_GPIO)
 	{
 		ret = gpio_request(LCD_EN_PIN, NULL);
@@ -635,6 +667,38 @@ static int rk_fb_io_init(struct rk29_fb_setting_info *fb_setting)
 			gpio_direction_output(LCD_EN_PIN, LCD_EN_VALUE);
 		}
 	}
+	if(LCD_PWR_PIN !=INVALID_GPIO)
+	{
+		ret = gpio_request(LCD_PWR_PIN, NULL);
+		if (ret != 0)
+		{
+			gpio_free(LCD_PWR_PIN);
+			printk(KERN_ERR "request lcd en pin fail!\n");
+			return -1;
+		}
+		else
+		{
+			gpio_direction_output(LCD_PWR_PIN, LCD_PWR_VALUE);
+		}
+	}
+	if(LCD_PWR_PIN_1 !=INVALID_GPIO)
+	{
+		ret = gpio_request(LCD_PWR_PIN_1, NULL);
+		if (ret != 0)
+		{
+			gpio_free(LCD_PWR_PIN_1);
+			printk(KERN_ERR "request lcd en pin fail!\n");
+			return -1;
+		}
+		else
+		{
+			gpio_direction_output(LCD_PWR_PIN_1, LCD_PWR_VALUE_1);
+		}
+	}
+
+
+
+
 	return 0;
 }
 static int rk_fb_io_disable(void)
@@ -643,10 +707,24 @@ static int rk_fb_io_disable(void)
 	{
 		gpio_set_value(LCD_CS_PIN, !LCD_CS_VALUE);
 	}
+	if(LCD_CS_PIN_1 !=INVALID_GPIO)
+	{
+		gpio_set_value(LCD_CS_PIN_1, !LCD_CS_VALUE_1);
+	}
+
 	if(LCD_EN_PIN !=INVALID_GPIO)
 	{
 		gpio_set_value(LCD_EN_PIN, !LCD_EN_VALUE);
 	}
+	if(LCD_PWR_PIN !=INVALID_GPIO)
+	{
+		gpio_direction_output(LCD_PWR_PIN, !LCD_PWR_VALUE);
+	}
+	if(LCD_PWR_PIN_1 !=INVALID_GPIO)
+	{
+		gpio_direction_output(LCD_PWR_PIN_1, !LCD_PWR_VALUE_1);
+	}
+
 	return 0;
 }
 static int rk_fb_io_enable(void)
@@ -655,10 +733,24 @@ static int rk_fb_io_enable(void)
 	{
 		gpio_set_value(LCD_CS_PIN, LCD_CS_VALUE);
 	}
+	if(LCD_CS_PIN_1 !=INVALID_GPIO)
+	{
+		gpio_set_value(LCD_CS_PIN_1, LCD_CS_VALUE_1);
+	}
+
 	if(LCD_EN_PIN !=INVALID_GPIO)
 	{
 		gpio_set_value(LCD_EN_PIN, LCD_EN_VALUE);
 	}
+	if(LCD_PWR_PIN !=INVALID_GPIO)
+	{
+		gpio_direction_output(LCD_PWR_PIN, LCD_PWR_VALUE);
+	}
+	if(LCD_PWR_PIN_1 !=INVALID_GPIO)
+	{
+		gpio_direction_output(LCD_PWR_PIN_1, LCD_PWR_VALUE_1);
+	}
+
 	return 0;
 }
 
@@ -693,6 +785,7 @@ struct rk29fb_info lcdc1_screen_info = {
 #endif	
 };
 #endif
+
 
 static struct resource resource_fb[] = {
 	[0] = {
@@ -867,6 +960,7 @@ static struct rk_hdmi_platform_data rk_hdmi_pdata = {
 	.io_init = rk_hdmi_power_init,
 };
 #endif
+
 #ifdef CONFIG_ION
 #if defined (CONFIG_PIPO_M6PRO)
 #define ION_RESERVE_SIZE        (80 * SZ_1M)
@@ -874,6 +968,7 @@ static struct rk_hdmi_platform_data rk_hdmi_pdata = {
 #define ION_RESERVE_SIZE        (120 * SZ_1M)
 #endif
 #define ION_RESERVE_SIZE_120M   (120 * SZ_1M)
+
 static struct ion_platform_data rk30_ion_pdata = {
 	.nr = 1,
 	.heaps = {
@@ -1204,14 +1299,6 @@ struct rk29_sdmmc_platform_data default_sdmmc2_data = {
 **************************************************************************************************/
 
 #ifdef CONFIG_BATTERY_RK30_ADC_FAC
-
-static int batt_table[2*11+6] =
-{
-	0x4B434F52, 0x7461625F, 0x79726574, 1, 390, 100,
-	6500, 7213, 7314, 7381, 7456, 7517, 7616, 7756, 7898, 8062, 8294,
-	7004, 7683, 7790, 7855, 7936, 8049, 8216, 8380, 8386, 8390, 8387
-};
-
 static struct rk30_adc_battery_platform_data rk30_adc_battery_platdata = {
         .dc_det_pin      = RK30_PIN0_PB2,
         .batt_low_pin    = INVALID_GPIO, 
@@ -1222,14 +1309,13 @@ static struct rk30_adc_battery_platform_data rk30_adc_battery_platdata = {
         .charge_ok_level = GPIO_HIGH,
 
 	.reference_voltage = 1800, // the rK2928 is 3300;RK3066 and rk29 are 2500;rk3066B is 1800;
-       .pull_up_res = 390,     //divider resistance ,  pull-up resistor - 200
-       .pull_down_res = 100, //divider resistance , pull-down resistor - 120
+       .pull_up_res = 200,     //divider resistance ,  pull-up resistor
+       .pull_down_res = 120, //divider resistance , pull-down resistor
 
 	.is_reboot_charging = 1,
         .save_capacity   = 1 ,
         .low_voltage_protection = 3600,    
-	.use_board_table    = 1,
-	.board_batt_table   = batt_table};
+};
 
 static struct platform_device rk30_device_adc_battery = {
         .name   = "rk30-battery",
@@ -1277,7 +1363,7 @@ static u8 config_info[SIZE_BATINFO] = {
 	0xCB, 0x2F, 0x7D, 0x72, 0xA5,
 	0xB5, 0xC1,	0x27, 0x09
 */
-//?e®¶-_DS1006_JSH101_MB7600_ProfileV3LT_20 130705.txt
+//?eÔøΩÔøΩ-_DS1006_JSH101_MB7600_ProfileV3LT_20 130705.txt
 /*
 	0x15, 0x13, 0x59, 0x58, 0x57,
 	0x55, 0x4F, 0x4C, 0x4A, 0x49,
@@ -1293,7 +1379,7 @@ static u8 config_info[SIZE_BATINFO] = {
 	0xCB, 0x2F, 0x7D, 0x72, 0xA5,
 	0xB5, 0xC1, 0x46, 0xAE
 */
-//2- ?e®¶-_DS1006_JSH101_MB7600_ProfileV3LT_20 130705.txt
+//2- ?eÔøΩÔøΩ-_DS1006_JSH101_MB7600_ProfileV3LT_20 130705.txt
 
     0x15, 0x17, 0x5B, 0x58, 0x57,
 	0x55, 0x4F, 0x4C, 0x4A, 0x49,
@@ -1382,7 +1468,7 @@ static struct rfkill_rk_platform_data rfkill_rk_platdata = {
     .type               = RFKILL_TYPE_BLUETOOTH,
 
     .poweron_gpio       = { // BT_REG_ON
-        .io             = RK30_PIN3_PD1,
+        .io             = RK30_PIN3_PD1,//INVALID_GPIO,
         .enable         = GPIO_HIGH,
         .iomux          = {
             .name       = "bt_poweron",
@@ -1391,11 +1477,11 @@ static struct rfkill_rk_platform_data rfkill_rk_platdata = {
     },
 
     .reset_gpio         = { // BT_RST
-        .io             = INVALID_GPIO,//RK30_PIN3_PC7, // set io to INVALID_GPIO for disable it
+        .io             = INVALID_GPIO,//RK30_PIN3_PD1, // set io to INVALID_GPIO for disable it
         .enable         = GPIO_LOW,
         .iomux          = {
             .name       = "bt_reset",
-            .fgpio      = GPIO3_C7,
+            .fgpio      = GPIO3_D1,
        },
    }, 
 
@@ -2180,16 +2266,7 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 	},
 #endif
 
-#if defined (CONFIG_DP_ANX6345)
-	{
-		.type          = "anx6345",
-		.addr          = 0x39,
-		.flags         = 0,
-		.platform_data = &anx6345_platform_data,
-	},
-#endif
-
-#if defined(CONFIG_HDMI_CAT66121) && defined(CONFIG_PIPO_M7PRO)
+#if defined(CONFIG_HDMI_CAT66121) && (defined(CONFIG_PIPO_M7PRO) || defined(CONFIG_PIPO_M9PRO))
 	{
 		.type		= "cat66121_hdmi",
 		.addr		= 0x4c,
@@ -2235,7 +2312,7 @@ static struct i2c_board_info __initdata i2c3_info[] = {
 
 #ifdef CONFIG_I2C4_RK30
 static struct i2c_board_info __initdata i2c4_info[] = {
-#if defined(CONFIG_HDMI_CAT66121) && !defined(CONFIG_PIPO_M7PRO)
+#if defined(CONFIG_HDMI_CAT66121) && !(defined(CONFIG_PIPO_M7PRO) || defined(CONFIG_PIPO_M9PRO))
 	{
 		.type		= "cat66121_hdmi",
 		.addr		= 0x4c,
@@ -2379,15 +2456,15 @@ static void __init machine_rk30_board_init(void)
 	pm_power_off = rk30_pm_power_off;
     gpio_direction_output(POWER_ON_PIN, GPIO_HIGH);
 //gps lan
-	if (gpio_request(RK30_PIN3_PC7, NULL)) {
+/*	if (gpio_request(RK30_PIN3_PC7, NULL)) {
 		gpio_free(RK30_PIN3_PC7);
 		printk("func %s, line %d: request gpio fail\n", __FUNCTION__, __LINE__);
 		return -1;
 	}
 	gpio_direction_output(RK30_PIN3_PC7, GPIO_HIGH);
-
-  	//gpio_request(RK30_PIN1_PA7, NULL);
-	//gpio_direction_output(RK30_PIN1_PA7, GPIO_HIGH);
+*/
+  	gpio_request(RK30_PIN1_PA7, NULL);
+	gpio_direction_output(RK30_PIN1_PA7, GPIO_HIGH);
 	
 	rk30_i2c_register_board_info();
 	spi_register_board_info(board_spi_devices, ARRAY_SIZE(board_spi_devices));
@@ -2416,7 +2493,7 @@ static void __init rk30_reserve(void)
 	/*if lcd resolution great than or equal to 1920*1200,reserve the ump memory */
 	if(!(get_fb_size() < ALIGN(HD_SCREEN_SIZE,SZ_1M)))
 	{
-		int ump_mem_phy_size=512UL*1024UL*1024UL; //320UL
+		int ump_mem_phy_size=320UL*1024UL*1024UL; 
 		resource_mali[0].start = board_mem_reserve_add("ump buf", ump_mem_phy_size); 
 		resource_mali[0].end = resource_mali[0].start + ump_mem_phy_size -1;
 	}

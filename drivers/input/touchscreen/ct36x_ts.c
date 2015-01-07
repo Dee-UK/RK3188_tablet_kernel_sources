@@ -113,7 +113,11 @@ static int ct360_write_regs(struct i2c_client *client, u8 reg, u8 const buf[], u
 char const  Binary_Data[32768]=
 {
 //#include "CT365RC972030D_V39120329A_waterproof_1.dat"
+#if defined (CONFIG_PIPO_M7PRO)
 #include "CT36X_JS_DS_973H_LX20x30_V18120810W.txt"
+#else
+#include "CT363LR2030D_1920x1200_V25130327FN.dat"
+#endif
 };
 
 char CTP_BootLoader(struct ct360_ts_data *ts)
@@ -275,7 +279,7 @@ char CTP_BootLoader(struct ct360_ts_data *ts)
 
 			I2C_Buf[5] = CheckSum[i];										// Load check sum to I2C Buffer 
 
-			i2c_master_normal_send(ts->client,I2C_Buf, 14,100*1000);									// Host write I2C_Buf[012] to CT365. 
+			i2c_master_normal_send(ts->client,I2C_Buf, 14,100*1000);									// Host write I2C_Buf[0\A1K12] to CT365. 
 
 			mdelay(1);													// 8 Bytes program --> Need 1 ms delay time 
 
@@ -441,7 +445,7 @@ static int ct360_ts_probe(struct i2c_client *client, const struct i2c_device_id 
 		pdata->shutdown(1);
 		mdelay(50);
 	}
-	//加40ms延时，否则读取出错。。
+	//\BC\D340ms\D1\D3时\A3\AC\B7\F1\D4\F2\B6\C1取\B3\F6\B4\ED\A1\A3\A1\A3
 	mdelay(40);
 	ret=ct360_write_regs(client,0xfF, loader_buf, 2);	
 	if(ret<0){

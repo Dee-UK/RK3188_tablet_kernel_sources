@@ -53,8 +53,16 @@ config PIPO_M7PRO
         
 config PIPO_M8HD
         bool "Pipo M8HD"
+        
+config PIPO_M8PRO
+        bool "Pipo M8Pro"
 
 config PIPO_M9PRO
         bool "Pipo M9Pro"
 
+config PIPO_M9MAX
+        bool "Pipo M9MAX"
+        
+config PIPO_U8
+        bool "Pipo U8"
 endchoice

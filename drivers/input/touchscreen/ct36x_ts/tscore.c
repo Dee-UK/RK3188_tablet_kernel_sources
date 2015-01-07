@@ -129,8 +129,12 @@ static ssize_t ct36x_ts_write(struct file *file, const char __user *buffer, size
 		break;
 
 		case CT36X_TS_FW_UPDATE:
+#if defined (CONFIG_TOUCHSCREEN_CT36X_FLASH)
 		printk("%s(): CT36X_TS_FW_UPDATE\n", __FUNCTION__);
 		ct36x_chip_go_bootloader(ct36x_ts.client, ct36x_ts.data.buf);
+#else
+		printk("%s(): CT36X_TS_FW_UPDATE IGNORED\n", __FUNCTION__);
+#endif
 		break;
 
 		case CT36X_TS_BIN_VER:

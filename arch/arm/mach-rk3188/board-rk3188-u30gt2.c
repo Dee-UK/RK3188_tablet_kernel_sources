@@ -189,7 +189,7 @@ static int rk29_backlight_io_init(void)
 	ret = gpio_request(BL_EN_PIN, "bl_en");
 	if (ret == 0) {
                 msleep(20);
-		gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);
+		gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);//BL_EN_VALUE=GPIO_HIGH
 	}
 #endif
         printk("xhc call %s()\n", __func__);
@@ -204,10 +204,12 @@ static int rk29_backlight_io_init(void)
 static int rk29_backlight_io_deinit(void)
 {
 	int ret = 0, pwm_gpio;
+
 #ifdef  LCD_DISP_ON_PIN
 	gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);
 	gpio_free(BL_EN_PIN);
 #endif
+
 	pwm_gpio = iomux_mode_to_gpio(PWM_MODE);
 	gpio_request(pwm_gpio, "bl_pwm");
 	gpio_direction_output(pwm_gpio, GPIO_LOW);
@@ -221,12 +223,13 @@ static int rk29_backlight_pwm_suspend(void)
 	ret = gpio_request(pwm_gpio, "bl_pwm");
 	if (ret) {
 		printk("func %s, line %d: request gpio fail\n", __FUNCTION__, __LINE__);
-		return ret;
-	}
-	gpio_direction_output(pwm_gpio, GPIO_LOW);
+	} else
+	(
+		gpio_direction_output(pwm_gpio, GPIO_LOW);
 #ifdef  LCD_DISP_ON_PIN
-	gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);
+		gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);
 #endif
+	}
 	return ret;
 }
 
@@ -237,10 +240,8 @@ static int rk29_backlight_pwm_resume(void)
 	gpio_free(pwm_gpio);
 	iomux_set(PWM_MODE);
 #ifdef  LCD_DISP_ON_PIN
-#if 1
 	msleep(250);
 	gpio_direction_output(BL_EN_PIN, BL_EN_VALUE);
-#endif
 #endif
 	return 0;
 }
@@ -256,7 +257,7 @@ static struct rk29_bl_info rk29_bl_info = {
 	.io_deinit = rk29_backlight_io_deinit,
 	.pwm_suspend = rk29_backlight_pwm_suspend,
 	.pwm_resume = rk29_backlight_pwm_resume,
-        .min_brightness = 50,
+        .min_brightness = 0,
 };
 
 static struct platform_device rk29_device_backlight = {
@@ -572,6 +573,7 @@ static int rk_fb_io_init(struct rk29_fb_setting_info *fb_setting)
 			gpio_direction_output(LCD_CS_PIN, LCD_CS_VALUE);
 		}
 	}
+
 	if(LCD_CS_PIN_1 !=INVALID_GPIO)
 	{
 		ret = gpio_request(LCD_CS_PIN_1, NULL);
@@ -660,8 +662,6 @@ static int rk_fb_io_disable(void)
 	{
 		gpio_direction_output(LCD_PWR_PIN_1, !LCD_PWR_VALUE_1);
 	}
-
-
 
 	return 0;
 }

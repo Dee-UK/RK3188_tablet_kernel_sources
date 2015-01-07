@@ -60,4 +60,10 @@ config TOUCHSCREEN_CT36X_MISC
 		bool "uses new touch point structure"
 		default y
 		depends on TOUCHSCREEN_CT36X_MISC
+
+		config TOUCHSCREEN_CT36X_FLASH
+		bool "Flash firmware on boot"
+		default y
+		depends on TOUCHSCREEN_CT36X_MISC
+
 endif

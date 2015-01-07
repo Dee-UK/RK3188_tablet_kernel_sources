@@ -26,7 +26,12 @@ static char const binary_data[]=
 #include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat" //M8HD
 #endif
 
-#if !defined (CONFIG_PIPO_M6PRO) && !defined (CONFIG_PIPO_M8HD)
+#if defined (CONFIG_PIPO_M7PRO)
+#include "M7PRO_SteveJC_CT363.dat"
+#endif
+
+
+#if !defined (CONFIG_PIPO_M6PRO) && !defined (CONFIG_PIPO_M8HD) && !defined (CONFIG_PIPO_M7PRO)
 //#include "lx46js08_a1_CT363_V01_FE91_130116.dat"
 //#include "Five_F304_89_1920_1200_CT363_V06_03C2_130403.dat"
 #include "CT363LR2030D_1920x1200_V25130327FN.dat"
@@ -39,22 +44,6 @@ static char const binary_data[]=
 //#include "wgj36js07_A1_CT363_V01_073C_131016.dat"
 //#include "wgj36js07_A1_CT363_V01_F78D_131018.dat"
 #endif
-};
-
-static char const binary_data_60[]=
-{
-//#include "lx46js08_a1_CT363_V01_FE91_130116.dat"
-#include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat" //M8HD
-//#include "Five_F304_89_1920_1200_CT363_V06_03C2_130403.dat"
-//#include "CT363LR2030D_1920x1200_V25130327FN.dat"
-//#include "CT36X_JS_DS_973H_LX20x30_V18120810W.dat"
-//#include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat"
-//#include "LX20JS06_A1_CT363_V03_5198_121015.dat"
-//#include "wgj22js1006_A1_CT363_V01_F450_130812.dat"
-//#include "wgj36js07_A1_CT363_V01_0DC5_131017.dat"
-//#include "wgj36js07_A1_CT363_V01_040C_130922.dat"
-//#include "wgj36js07_A1_CT363_V01_073C_131016.dat"
-//#include "wgj36js07_A1_CT363_V01_F78D_131018.dat"
 };
 
 static void ct36x_chip_set_idle(struct i2c_client *client, unsigned char *buf)

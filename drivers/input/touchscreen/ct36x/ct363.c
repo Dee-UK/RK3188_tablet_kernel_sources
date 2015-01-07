@@ -174,7 +174,7 @@ static void ct363_report(struct ct36x_data *ts)
 		return;
 	}
 
-       int t ,m;
+       int t, m;
        if(ct36x_dbg_level==2)
        for(t=0;t< ts->point_num;t++){
             ct36x_dbg(ts, "CT363buf[%d]: ", t);

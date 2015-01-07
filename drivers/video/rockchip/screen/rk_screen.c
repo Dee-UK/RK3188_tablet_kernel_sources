@@ -300,7 +300,7 @@ void set_lcd_info(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 	    	screen->sscreen_get = set_scaler_info;
 	#endif
 
-#if !defined (CONFIG_PIPO_M6PRO)
+#if !(defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M8PRO) || defined (CONFIG_PIPO_M9MAX))
 	msleep(100);
 	lcd_io_init();
 	msleep(200);
