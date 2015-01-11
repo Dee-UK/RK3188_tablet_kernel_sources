@@ -104,6 +104,36 @@ extern int set_probe_state(int state)
        tp_probe_flag = state;
 }
 static struct rk29_keys_button key_button[] = {
+#if defined (CONFIG_PIPO_M6PRO)
+	{
+		.desc	= "play",
+		.code	= KEY_POWER,
+		.gpio	= RK30_PIN0_PA4, 
+		.active_low = PRESS_LEV_LOW,
+		.wakeup	= 1,
+	},
+	{
+		.desc	= "back",
+		.code	= KEY_BACK,
+		.gpio = INVALID_GPIO,
+		.adc_value	= 355,
+		.active_low = PRESS_LEV_LOW,
+	},
+	{
+		.desc	= "vol-",
+		.code	= KEY_VOLUMEDOWN,  //KEY_VOLUMEDOWN,
+		.gpio = INVALID_GPIO,
+		.adc_value	= 145,
+		.active_low = PRESS_LEV_LOW,
+	},
+	{
+		.desc	= "vol+",
+		.code	= KEY_VOLUMEUP,
+		.gpio = INVALID_GPIO,
+		.adc_value	= 1,
+		.active_low = PRESS_LEV_LOW,
+	},
+#else
 	{
 		.desc	= "play",
 		.code	= KEY_POWER,
@@ -127,6 +157,7 @@ static struct rk29_keys_button key_button[] = {
 		.active_low = PRESS_LEV_LOW,
 		.code_long_press = KEY_VOLUMEUP,
 	},
+#endif
 };
 struct rk29_keys_platform_data rk29_keys_pdata = {
 	.buttons	= key_button,
@@ -342,7 +373,7 @@ static struct sensor_platform_data lis3dh_info = {
 	.orientation = {0, 1, 0, 1, 0, 0, 0, 0, -1}, //M6PRO
 #endif
 #if !defined (CONFIG_PIPO_M6PRO) && !defined (CONFIG_PIPO_M7PRO)
-	.orientation = {-1, 0, 0, 0, 1, 0, 0, 0, -1},
+	.orientation = {0, 1, 0, 1, 0, 0, 0, 0, -1,},
 #endif
 };
 
@@ -1529,23 +1560,19 @@ int rk_gps_io_init(void)
 {
 	printk("%s \n", __FUNCTION__);
 	
-	rk30_mux_api_set(GPIO1B5_UART3RTSN_NAME, GPIO1B_GPIO1B5);//VCC_EN
 	gpio_request(RK30_PIN1_PB5, NULL);
 	gpio_direction_output(RK30_PIN1_PB5, GPIO_LOW);
 
-	rk30_mux_api_set(GPIO1B4_UART3CTSN_GPSRFCLK_NAME, GPIO1B_GPSRFCLK);//GPS_CLK
-	rk30_mux_api_set(GPIO1B2_UART3SIN_GPSMAG_NAME, GPIO1B_GPSMAG);//GPS_MAG
-	rk30_mux_api_set(GPIO1B3_UART3SOUT_GPSSIG_NAME, GPIO1B_GPSSIG);//GPS_SIGN
+	iomux_set(GPS_RFCLK);//GPS_CLK
+	iomux_set(GPS_MAG);//GPS_MAG
+	iomux_set(GPS_SIG);//GPS_SIGN
 
-	rk30_mux_api_set(GPIO1A6_UART1CTSN_SPI0CLK_NAME, GPIO1A_GPIO1A6);//SPI_CLK
 	gpio_request(RK30_PIN1_PA6, NULL);
 	gpio_direction_output(RK30_PIN1_PA6, GPIO_LOW);
 
-	rk30_mux_api_set(GPIO1A5_UART1SOUT_SPI0TXD_NAME, GPIO1A_GPIO1A5);//SPI_MOSI
 	gpio_request(RK30_PIN1_PA5, NULL);
 	gpio_direction_output(RK30_PIN1_PA5, GPIO_LOW);	
 
-	rk30_mux_api_set(GPIO1A7_UART1RTSN_SPI0CSN0_NAME, GPIO1A_GPIO1A7);//SPI_CS
 	gpio_request(RK30_PIN1_PA7, NULL);
 	gpio_direction_output(RK30_PIN1_PA7, GPIO_LOW);		
 	return 0;
@@ -1570,14 +1597,30 @@ int rk_gps_reset_set(int level)
 }
 int rk_enable_hclk_gps(void)
 {
-	printk("%s \n", __FUNCTION__);
-	clk_enable(clk_get(NULL, "hclk_gps"));
+	struct clk *gps_aclk = NULL;
+	gps_aclk = clk_get(NULL, "aclk_gps");
+	if(gps_aclk) {
+		clk_enable(gps_aclk);
+		clk_put(gps_aclk);
+		printk("%s \n", __FUNCTION__);
+	}
+	else
+		printk("get gps aclk fail\n");
 	return 0;
 }
 int rk_disable_hclk_gps(void)
 {
-	printk("%s \n", __FUNCTION__);
-	clk_disable(clk_get(NULL, "hclk_gps"));
+	struct clk *gps_aclk = NULL;
+	gps_aclk = clk_get(NULL, "aclk_gps");
+	if(gps_aclk) {
+		//TO wait long enough until GPS ISR is finished.
+		msleep(5);
+		clk_disable(gps_aclk);
+		clk_put(gps_aclk);
+		printk("%s \n", __FUNCTION__);
+	}	
+	else
+		printk("get gps aclk fail\n");
 	return 0;
 }
 struct rk_gps_data rk_gps_info = {
