@@ -71,7 +71,7 @@ static struct rkcamera_platform_data new_camera[] = {
 #define CONFIG_SENSOR_RESET_PIN_0		  INVALID_GPIO
 #define CONFIG_SENSOR_POWERDN_PIN_0 	  RK30_PIN3_PB5
 
-#if defined (CONFIG_PIPO_M6PRO)
+#if defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M9MAX)
 #define CONFIG_SENSOR_FALSH_PIN_0		  RK30_PIN0_PD5
 #else
 #define CONFIG_SENSOR_FALSH_PIN_0		  RK30_PIN0_PC3
@@ -277,7 +277,7 @@ static int sensor_powerdown_usr_cb (struct rk29camera_gpio_res *res,int on)
 
 #if CONFIG_SENSOR_FLASH_IOCTL_USR
 
-#if defined (CONFIG_PIPO_M6PRO)
+#if defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M9MAX)
 #define CONFIG_SENSOR_FALSH_EN_PIN_0		  RK30_PIN0_PD5
 #define CONFIG_SENSOR_FALSH_EN_MUX_0		  GPIO0D5_SPI1TXD_NAME
 #define CONFIG_SENSOR_FALSH_MODE_PIN_0		  RK30_PIN0_PD4 //high:FLASH, low:torch

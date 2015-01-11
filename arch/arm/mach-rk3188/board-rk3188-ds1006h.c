@@ -369,7 +369,7 @@ static struct sensor_platform_data lis3dh_info = {
 #if defined (CONFIG_PIPO_M7PRO)
 	.orientation = {-1, 0, 0, 0, 1, 0, 0, 0, -1},//M7PRO
 #endif
-#if defined (CONFIG_PIPO_M6PRO)
+#if defined (CONFIG_PIPO_M6PRO) 
 	.orientation = {0, 1, 0, 1, 0, 0, 0, 0, -1}, //M6PRO
 #endif
 #if !defined (CONFIG_PIPO_M6PRO) && !defined (CONFIG_PIPO_M7PRO)
