@@ -1,5 +1,10 @@
 #include <linux/rk_fb.h>
+
+#if (defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M8PRO) || defined (CONFIG_PIPO_M9MAX) || defined (CONFIG_PIPO_U8))
+#include "lcd_dsi.h"
+#else
 #include "lcd.h"
+#endif
 
 #if defined(CONFIG_RK_HDMI)
 	#include "../hdmi/rk_hdmi.h"
@@ -300,7 +305,6 @@ void set_lcd_info(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 	    	screen->sscreen_get = set_scaler_info;
 	#endif
 
-#if !(defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M8PRO) || defined (CONFIG_PIPO_M9MAX))
 	msleep(100);
 	lcd_io_init();
 	msleep(200);
@@ -310,7 +314,6 @@ void set_lcd_info(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 #endif
 	msleep(100);
 #endif 
-#endif
 }
 
 #if defined(CONFIG_MACH_RK_FAC)

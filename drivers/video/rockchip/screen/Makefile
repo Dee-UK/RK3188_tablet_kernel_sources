@@ -66,8 +66,10 @@ obj-$(CONFIG_LCD_RK3028_86V)   += lcd_E242868_rk3028_86v.o
 obj-$(CONFIG_LCD_MQ0801D)    += lcd_mq0801d.o
 obj-$(CONFIG_LCD_LD089WU1_MIPI_M8HD)   += lcd_LD089WU1_mipi_m8hd.o
 obj-$(CONFIG_LCD_LD089WU1_MIPI_M7PRO)   += lcd_LD089WU1_mipi_m7pro.o
+obj-$(CONFIG_LCD_PIPO_MIPI_M7PRO)   += lcd_PIPO_m7pro_mipi.o
 obj-$(CONFIG_LCD_CLAA101FP01_MIPI_M9PRO) += lcd_claa101fp01_mipi_m9pro.o
-obj-$(CONFIG_LCD_MIPI_1024x768_U8)	+= lcd_mipi_1024x768_u8.o
+obj-$(CONFIG_LCD_PIPO_MIPI_M9PRO)   += lcd_PIPO_m9pro_mipi.o
+obj-$(CONFIG_LCD_PIPO_MIPI_U8)	+= lcd_PIPO_U8_mipi.o
 obj-$(CONFIG_LCD_B080XAN02_MIPI)   += lcd_B080XAN02_mipi.o
 
 
