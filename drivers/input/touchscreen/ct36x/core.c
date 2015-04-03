@@ -8,7 +8,11 @@
 #define CT36X_CHIP_FLASH_SOURCE_SIZE	8
 
 static unsigned char binary_data[] = {
+#if defined(CONFIG_PIPO_M9PRO)
+#include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat"
+#else
 #include "LX20JS06_A1_CT363_V03_5198_121015.dat"
+#endif
 };
 
 int ct36x_chip_set_idle(struct ct36x_data *ts)
