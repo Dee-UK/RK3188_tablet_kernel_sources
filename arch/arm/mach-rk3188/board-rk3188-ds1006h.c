@@ -229,7 +229,7 @@ static struct spi_board_info board_spi_devices[] = {
 #ifdef CONFIG_BACKLIGHT_RK29_BL
 #define PWM_ID            3
 #define PWM_MODE	  PWM3
-#if defined (CONFIG_PIPO_M6PRO)
+#if defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M7PRO)
 #define PWM_EFFECT_VALUE  0
 #else
 #define PWM_EFFECT_VALUE  1
@@ -323,10 +323,10 @@ static int rk29_backlight_pwm_resume(void)
 }
 
 static struct rk29_bl_info rk29_bl_info = {
-        .min_brightness = 0,//10
-        .max_brightness = 255,
+        .min_brightness = 20,//10
+        .max_brightness = 150,//255
         .brightness_mode =BRIGHTNESS_MODE_CONIC,
-	.pre_div = 30 * 1000,  // pwm output clk: 30k;
+	.pre_div = 40 * 1000,  // pwm output clk: 40k;
 	.pwm_id = PWM_ID,
 	.bl_ref = PWM_EFFECT_VALUE,
 	.io_init = rk29_backlight_io_init,
@@ -605,7 +605,7 @@ struct ssd2828_t ssd2828_platdata = {
 		.effect_value = GPIO_LOW,
 	},
 	.vddio = {                       //POWER ON
-		.enable_pin = INVALID_GPIO,//RK30_PIN0_PB1,//RK30_PIN0_PB0,
+		.enable_pin = INVALID_GPIO,//RK30_PIN0_PB0/PB1
 		.effect_value = GPIO_LOW,
 		.name = NULL,
 		.voltage = 0,

@@ -188,6 +188,32 @@ static long us5151_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 static void us5151_value_report(struct input_dev *input, int data)
 {
 	unsigned char index = 0;
+#if defined(CONFIG_PIPO_M7PRO)
+	if(data <= 30){
+		index = 0;goto report;
+	}
+	else if(data <= 100){
+		index = 1;goto report;
+	}
+	else if(data <= 150){
+		index = 2;goto report;
+	}
+	else if(data <= 220){
+		index = 3;goto report;
+	}
+	else if(data <= 280){
+		index = 4;goto report;
+	}
+	else if(data <= 350){
+		index = 5;goto report;
+	}
+	else if(data <= 420){
+		index = 6;goto report;
+	}
+	else{
+		index = 7;goto report;
+	}
+#else
 	if(data <= 60){
 		index = 0;goto report;
 	}
@@ -212,6 +238,7 @@ static void us5151_value_report(struct input_dev *input, int data)
 	else{
 		index = 7;goto report;
 	}
+#endif
 report:
 	DBG("us5151 report index = %d data=%d\n",index,data);
 	input_report_abs(input, ABS_MISC, index);
@@ -244,7 +271,11 @@ static void us5151_read(struct work_struct *work)
 	}
 
 	if(us5151->statue){
+#if defined(M7Pro)
+		us5151->timer.expires  = jiffies + 3*HZ;
+#else
 		us5151->timer.expires  = jiffies + 1*HZ;
+#endif
 		add_timer(&us5151->timer);
 	}
 };
