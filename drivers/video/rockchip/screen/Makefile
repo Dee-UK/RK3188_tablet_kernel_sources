@@ -70,6 +70,7 @@ obj-$(CONFIG_LCD_PIPO_MIPI_M7PRO)   += lcd_PIPO_m7pro_mipi.o
 obj-$(CONFIG_LCD_CLAA101FP01_MIPI_M9PRO) += lcd_claa101fp01_mipi_m9pro.o
 obj-$(CONFIG_LCD_PIPO_MIPI_M9PRO)   += lcd_PIPO_m9pro_mipi.o
 obj-$(CONFIG_LCD_PIPO_MIPI_U8)	+= lcd_PIPO_U8_mipi.o
+obj-$(CONFIG_LCD_D33_MIPI_U8)	+= lcd_D33_U8.o
 obj-$(CONFIG_LCD_B080XAN02_MIPI)   += lcd_B080XAN02_mipi.o
 
 

@@ -70,11 +70,11 @@ int rk_lcd_init(void) {
 	
 	if(gTmp == 1)
 	{
-		ret = gpio_request(MIPI_RST_PIN, "mipi rest pin");
+		ret = gpio_request(MIPI_RST_PIN, "mipi reset pin");
 		if( ret != 0 )
 		{
 			gpio_free(MIPI_RST_PIN);
-			printk("mipi rest pin error\n");
+			printk("mipi reset pin error\n");
 			return -EIO;
 		}
 		gTmp++;		
