@@ -1,6 +1,6 @@
 #include <linux/rk_fb.h>
 
-#if (defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M8PRO) || defined (CONFIG_PIPO_M9MAX) ) //|| defined (CONFIG_PIPO_U8)
+#if (defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M8PRO) || defined (CONFIG_PIPO_M9MAX) ) || defined (CONFIG_PIPO_U8)
 #include "lcd_dsi.h"
 #else
 #include "lcd.h"

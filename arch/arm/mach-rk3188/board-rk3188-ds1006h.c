@@ -259,7 +259,17 @@ struct platform_device device_bp_auto = {
     };
 #endif
 
-#if (defined(CONFIG_CT36X_TS) || defined(CONFIG_TOUCHSCREEN_CT36X))
+#if defined (CONFIG_TOUCHSCREEN_VTL_CT36X)
+#include "../../../drivers/input/touchscreen/vtl_ts/vtl_ts.h" 
+struct ts_config_info vtl_ts_config_info={
+	.screen_max_x =1920, 
+	.screen_max_y=1200, 
+	.irq_gpio_number=RK30_PIN1_PB7, 
+	.rst_gpio_number=RK30_PIN0_PB6, 
+	};
+#endif
+
+#if defined(CONFIG_CT36X_TS) || defined(CONFIG_TOUCHSCREEN_CT36X)
 
 #define TOUCH_MODEL		363
 
@@ -273,7 +283,7 @@ struct platform_device device_bp_auto = {
 #define TOUCH_MAX_y		1024
 #endif
 
-#if (!defined (CONFIG_PIPO_M6PRO) || !defined(CONFIG_PIPO_U8))
+#if !defined (CONFIG_PIPO_M6PRO) && !defined(CONFIG_PIPO_U8)
 #define TOUCH_MAX_X		1920
 #define TOUCH_MAX_y		1200
 #endif
@@ -491,16 +501,6 @@ struct platform_device rk_device_headset = {
 };
 #endif
 
-#ifdef CONFIG_TOUCHSCREEN_VTL_CT36X
-#include "../../../drivers/input/touchscreen/vtl_ts/vtl_ts.h" //œá¹¹Ìå config_info µÄÉùÃ÷
-struct ts_config_info vtl_ts_config_info={
-	.screen_max_x =1920, //xÖá·Ö±æÂÊ
-	.screen_max_y=1200,  //yÖá·Ö±æÂÊ
-	.irq_gpio_number=RK30_PIN1_PB7, //ÖÐ¶ÏGPIO¹ÜœÅ
-	.rst_gpio_number=RK30_PIN0_PB6, //žŽÎ»GPIO¹ÜœÅ
-	};
-#endif
-
 static struct spi_board_info board_spi_devices[] = {
 };
 
@@ -525,11 +525,11 @@ static struct spi_board_info board_spi_devices[] = {
 
 static int rk29_backlight_io_init(void)
 {
-	int ret = 0;
+	int ret = 0, hubret = 0;
 
 	iomux_set(PWM_MODE);
 	
-	ret = gpio_request(BL_EN_PIN, "bl_en"); //NULL
+	ret = gpio_request(BL_EN_PIN, "bl_en");
 	if (ret != 0) {
 		gpio_free(BL_EN_PIN);
 	}
@@ -537,8 +537,8 @@ static int rk29_backlight_io_init(void)
 	gpio_direction_output(BL_EN_PIN, 0);
 	gpio_set_value(BL_EN_PIN, BL_EN_VALUE);
 
-	ret = gpio_request(HUB_RST_PIN, "hub_rst");
-	if (ret != 0) {
+	hubret = gpio_request(HUB_RST_PIN, "hub_rst");
+	if (hubret != 0) {
 		gpio_free(HUB_RST_PIN);
 	}
 
@@ -550,13 +550,16 @@ static int rk29_backlight_io_init(void)
 
 static int rk29_backlight_io_deinit(void)
 {
-	int ret = 0, pwm_gpio;
+	int ret = 0;
 
 	gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);
 	gpio_free(BL_EN_PIN);
 
-	pwm_gpio = iomux_mode_to_gpio(PWM_MODE);
-	gpio_request(pwm_gpio, "bl_pwm"); // NULL
+	int pwm_gpio = iomux_mode_to_gpio(PWM_MODE);
+	ret = gpio_request(pwm_gpio, "bl_pwm");
+	if (ret != 0) {
+		gpio_free(pwm_gpio);
+	}
 	gpio_direction_output(pwm_gpio, GPIO_LOW);
 
 	return ret;
@@ -567,16 +570,17 @@ static int rk29_backlight_pwm_suspend(void)
 	int ret, pwm_gpio;
 
 	pwm_gpio = iomux_mode_to_gpio(PWM_MODE);//PWM_MODE = PWM3
+
 	ret = gpio_request(pwm_gpio, "bl_pwm");
-	if (ret) {
+	if (ret != 0) {
+		gpio_free(pwm_gpio);
 		printk("func %s, line %d: request gpio fail\n", __FUNCTION__, __LINE__);
-	} else
-	{
+	} //else
+	//{
 		gpio_direction_output(pwm_gpio, GPIO_LOW);
-		gpio_direction_output(BL_EN_PIN, 0);
-		gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);//d33
+		gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);//d33 - !BL_EN_VALUE replaces 0
 		gpio_set_value(BL_EN_PIN, !BL_EN_VALUE);
-	}
+	//}
 	return ret;
 }
 
@@ -595,7 +599,11 @@ static int rk29_backlight_pwm_resume(void)
 }
 
 static struct rk29_bl_info rk29_bl_info = {
-        .min_brightness = 20,//10
+#if defined(CONFIG_PIPO_M7PRO)
+        .min_brightness = 40,
+#else
+        .min_brightness = 20,
+#endif
         .max_brightness = 150,//255
         .brightness_mode =BRIGHTNESS_MODE_CONIC,
 	.pre_div = 40 * 1000,  // pwm output clk: 40k;
@@ -1271,29 +1279,36 @@ static struct rk610_codec_platform_data rk610_codec_pdata = {
 #endif
 
 #ifdef CONFIG_RK_HDMI
-#define RK_HDMI_RST_PIN 			RK30_PIN3_PB2
-#define RK_HDMI_POWER_EN_PIN         RK30_PIN1_PB5
+#define RK_HDMI_RST_PIN		RK30_PIN3_PB2
+#if defined (CONFIG_PIPO_U8)
+#define RK_HDMI_POWER_EN_PIN	RK30_PIN2_PD5
+#else
+#define RK_HDMI_POWER_EN_PIN	RK30_PIN1_PB5
+#endif
 static int rk_hdmi_power_init(void)
 {
-	int ret;
+	int ret_en = 0;
+	int ret_rst = 0;
+
 	printk("func %s, line %d: \n", __FUNCTION__, __LINE__);
 
-	   if(RK_HDMI_POWER_EN_PIN != INVALID_GPIO)
-	{
-		if (gpio_request(RK_HDMI_POWER_EN_PIN, NULL)) {
+	if(RK_HDMI_POWER_EN_PIN != INVALID_GPIO) {
+		ret_en = gpio_request(RK_HDMI_POWER_EN_PIN, NULL);
+		if (ret_en !=0) {
 			printk("func %s, line %d: request gpio hdmi power en pin fail\n", __FUNCTION__, __LINE__);
-			return -1;
+			gpio_free(RK_HDMI_POWER_EN_PIN);
 		}
 		gpio_direction_output(RK_HDMI_POWER_EN_PIN, GPIO_LOW);
 		gpio_set_value(RK_HDMI_POWER_EN_PIN, GPIO_LOW);
-
 	}
+
 	msleep(100);
-	if(RK_HDMI_RST_PIN != INVALID_GPIO)
-	{
-		if (gpio_request(RK_HDMI_RST_PIN, NULL)) {
+
+	if(RK_HDMI_RST_PIN != INVALID_GPIO) {
+		ret_rst = gpio_request(RK_HDMI_RST_PIN, NULL);
+		if (ret_rst != 0) {
 			printk("func %s, line %d: request gpio fail\n", __FUNCTION__, __LINE__);
-			return -1;
+			gpio_free(RK_HDMI_RST_PIN);
 		}
 		gpio_direction_output(RK_HDMI_RST_PIN, GPIO_LOW);
 		gpio_set_value(RK_HDMI_RST_PIN, GPIO_LOW);
@@ -1301,8 +1316,10 @@ static int rk_hdmi_power_init(void)
 		gpio_set_value(RK_HDMI_RST_PIN, GPIO_HIGH);
 		msleep(50);
 	}
-	return 0;
+
+	return ret_rst + ret_en;
 }
+
 static struct rk_hdmi_platform_data rk_hdmi_pdata = {
 	.io_init = rk_hdmi_power_init,
 };
@@ -1870,7 +1887,7 @@ static struct rfkill_rk_platform_data rfkill_rk_platdata = {
 #endif
             .enable     = GPIO_LOW,      // set GPIO_LOW for falling, set 0 for rising
             .iomux      = {
-                .name   = NULL,
+                .name   = "bt_host_wake",
             },
         },
     },

@@ -120,9 +120,13 @@ int rk29_bl_val_scalor_line(struct rk29_bl_info *rk29_bl_info,int brightness)
 }
 int rk29_bl_val_scalor_conic(struct rk29_bl_info *rk29_bl_info,int brightness)
 {
-	
+
 	//rk29_bl_min_brightness_check(rk29_bl_info);
 	//rk29_bl_max_brightness_check(rk29_bl_info);
+
+#if defined(CONFIG_PIPO_M7PRO)	
+	 brightness = rk29_bl_info->min_brightness+brightness * (rk29_bl_info->max_brightness - rk29_bl_info->min_brightness)/255;
+#else //for all not M7Pro
 	
 	if(rk29_bl_info->max_brightness<rk29_bl_info->min_brightness)
 		rk29_bl_info->max_brightness=rk29_bl_info->min_brightness;
@@ -140,6 +144,7 @@ int rk29_bl_val_scalor_conic(struct rk29_bl_info *rk29_bl_info,int brightness)
 		brightness = rk29_bl_info->max_brightness;
 	if(brightness < rk29_bl_info->min_brightness)	
 		brightness = rk29_bl_info->min_brightness;
+#endif //not M7Pro
 	
 	return brightness;
 }
@@ -153,9 +158,10 @@ static int rk29_bl_update_status(struct backlight_device *bl)
 	
 	mutex_lock(&backlight_mutex);
 	//BL_CORE_DRIVER2 is the flag if backlight is into early_suspend.
+#if !defined (CONFIG_PIPO_M7PRO)
 	if (suspend_flag && (bl->props.state & BL_CORE_DRIVER2))
 	    goto out;
-
+#endif
 	brightness = bl->props.brightness;
 
 	if(brightness)
@@ -188,7 +194,9 @@ static int rk29_bl_update_status(struct backlight_device *bl)
 	} else {
 		divh = div_total*(BL_STEP-brightness)/BL_STEP;
 	}
-	rk_pwm_setup(id, PWM_DIV, divh, div_total);
+
+// moved to after following block by D33
+//	rk_pwm_setup(id, PWM_DIV, divh, div_total);
 
 //BL_CORE_DRIVER1 is the flag if backlight pwm is closed.
 	if ((bl->props.state & BL_CORE_DRIVER1) && brightness ==0 ){  
@@ -211,7 +219,7 @@ static int rk29_bl_update_status(struct backlight_device *bl)
 		rk_pwm_setup(id, PWM_DIV, divh, div_total);
 	}
 
-
+	rk_pwm_setup(id, PWM_DIV, divh, div_total);
 
 	DBG("%s:line=%d,brightness = %d, div_total = %d, divh = %d state=%x \n",__FUNCTION__,__LINE__,brightness, div_total, divh,bl->props.state);
 out:
@@ -272,7 +280,11 @@ static void rk29_bl_resume(struct early_suspend *h)
 	DBG("%s : %s\n", __FILE__, __FUNCTION__);
 	rk29_bl->props.state &= ~BL_CORE_DRIVER2;
 	
+#if !defined (CONFIG_PIPO_M7PRO)
 	schedule_delayed_work(&rk29_backlight_work, msecs_to_jiffies(rk29_bl_info->delay_ms));
+#else
+	schedule_delayed_work(&rk29_backlight_work, 0);
+#endif
 }
 
 static struct early_suspend bl_early_suspend = {
