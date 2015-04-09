@@ -1,6 +1,6 @@
 #include <linux/rk_fb.h>
 
-#if (defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M8PRO) || defined (CONFIG_PIPO_M9MAX) ) || defined (CONFIG_PIPO_U8)
+#if (defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M8PRO) || defined (CONFIG_PIPO_M9MAX) ) 
 #include "lcd_dsi.h"
 #else
 #include "lcd.h"
@@ -304,7 +304,7 @@ void set_lcd_info(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 	#if defined(CONFIG_ONE_LCDC_DUAL_OUTPUT_INF) 
 	    	screen->sscreen_get = set_scaler_info;
 	#endif
-
+#if !defined(CONFIG_PIPO_U8)
 	msleep(100);
 	lcd_io_init();
 	msleep(200);
@@ -313,6 +313,7 @@ void set_lcd_info(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
     	dsi_probe_current_chip();
 #endif
 	msleep(100);
+#endif //U8
 #endif 
 }
 

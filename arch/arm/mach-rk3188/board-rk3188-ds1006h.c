@@ -600,7 +600,7 @@ static int rk29_backlight_pwm_resume(void)
 
 static struct rk29_bl_info rk29_bl_info = {
 #if defined(CONFIG_PIPO_M7PRO)
-        .min_brightness = 40,
+        .min_brightness = 50,
 #else
         .min_brightness = 20,
 #endif
@@ -940,7 +940,7 @@ static struct platform_device device_ssd2828 = {
 	#define LCD_EN_VALUE       GPIO_LOW
 #endif
 
-#define LCD_PWR_PIN         RK30_PIN1_PB5
+#define LCD_PWR_PIN         INVALID_GPIO //RK30_PIN1_PB5
 #define LCD_PWR_VALUE       GPIO_HIGH
 
 /* D33
@@ -1281,7 +1281,7 @@ static struct rk610_codec_platform_data rk610_codec_pdata = {
 #ifdef CONFIG_RK_HDMI
 #define RK_HDMI_RST_PIN		RK30_PIN3_PB2
 #if defined (CONFIG_PIPO_U8)
-#define RK_HDMI_POWER_EN_PIN	RK30_PIN2_PD5
+#define RK_HDMI_POWER_EN_PIN	RK30_PIN2_PD6
 #else
 #define RK_HDMI_POWER_EN_PIN	RK30_PIN1_PB5
 #endif
@@ -1852,7 +1852,7 @@ static struct rfkill_rk_platform_data rfkill_rk_platdata = {
     .type               = RFKILL_TYPE_BLUETOOTH,
 
     .poweron_gpio       = { // BT_REG_ON
-        .io             = RK30_PIN3_PD1,//INVALID_GPIO,
+        .io             = RK30_PIN3_PD1,
         .enable         = GPIO_HIGH,
         .iomux          = {
             .name       = "bt_poweron",
@@ -1861,7 +1861,7 @@ static struct rfkill_rk_platform_data rfkill_rk_platdata = {
     },
 
     .reset_gpio         = { // BT_RST
-        .io             = INVALID_GPIO,//RK30_PIN3_PD1, // set io to INVALID_GPIO for disable it
+        .io             = INVALID_GPIO,//RK30_PIN3_PD1, 
         .enable         = GPIO_LOW,
         .iomux          = {
             .name       = "bt_reset",
@@ -1881,7 +1881,7 @@ static struct rfkill_rk_platform_data rfkill_rk_platdata = {
     .wake_host_irq      = { // BT_HOST_WAKE, for bt wakeup host when it is in deep sleep
         .gpio           = {
 #if defined (CONFIG_PIPO_M7PRO)
-            .io         = RK30_PIN3_PC7, // set io to INVALID_GPIO to disable it
+            .io         = RK30_PIN3_PC7, 
 #else
             .io         = RK30_PIN0_PA5, // d33 standard setting
 #endif
@@ -2915,25 +2915,82 @@ static void rk30_pm_power_off(void)
 
 static void __init machine_rk30_board_init(void)
 {
-	//avs_init();
+	int ret;	
+
+	avs_init(); //NAND io remap - possibly comment out? d33
 	gpio_request(POWER_ON_PIN, "poweronpin");
 	gpio_direction_output(POWER_ON_PIN, GPIO_HIGH);
 	
 	pm_power_off = rk30_pm_power_off;
-    gpio_direction_output(POWER_ON_PIN, GPIO_HIGH);
-//gps lan
+	
+	gpio_direction_output(POWER_ON_PIN, GPIO_HIGH);
+
 #if defined (CONFIG_PIPO_M9PRO)
-	if (gpio_request(RK30_PIN3_PC7, NULL)) {
+//gps lan
+	if (gpio_request(RK30_PIN3_PC7, "RK30_GPS_LAN")) {
 		gpio_free(RK30_PIN3_PC7);
 		printk("func %s, line %d: request gpio fail\n", __FUNCTION__, __LINE__);
 		//return -1; //commented out by D33
+	} else {
+		gpio_direction_output(RK30_PIN3_PC7, GPIO_HIGH);
 	}
-	gpio_direction_output(RK30_PIN3_PC7, GPIO_HIGH);
-#else
-  	gpio_request(RK30_PIN1_PA7, NULL);
-	gpio_direction_output(RK30_PIN1_PA7, GPIO_HIGH);
 #endif
-	
+
+#if defined(CONFIG_PIPO_M7PRO)
+	ret = gpio_request(RK30_PIN0_PA3, "RK30_init_0-A3");
+	if (ret != 0) {
+		printk("requested gpio, RK30_PIN0_PA3, failed ,ret = %d ! \n",ret);
+		gpio_free(RK30_PIN0_PA3);
+	} else
+	{
+		gpio_direction_output(RK30_PIN0_PA3, 1);
+		gpio_set_value(RK30_PIN0_PA3, 1);
+	}
+
+	ret = gpio_request(RK30_PIN0_PC3, "RK30_init_0-C3");
+	if (ret != 0) {
+		printk("requested gpio, RK30_PIN0_PC3, failed, ret = %d ! \n",ret);
+		gpio_free(RK30_PIN0_PC3);
+		//return -1;
+	} else
+	{
+		gpio_direction_output(RK30_PIN0_PC3, 1);
+		gpio_set_value(RK30_PIN0_PC3, 1);
+	}
+
+	ret = gpio_request(RK30_PIN0_PD4, "RK30_init_0-D4");
+	if (ret != 0) {
+		printk("request gpio RK30_PIN0_PD4 failed, ret = %d ! \n",ret);
+		gpio_free(RK30_PIN0_PD4);
+		//return -1;
+	} else
+	{
+		gpio_direction_output(RK30_PIN0_PD4, 1);
+		gpio_set_value(RK30_PIN0_PD4, 1);
+	}
+
+	if (gpio_request(RK30_PIN2_PD4, "RK30_init_2-D4")) {
+		printk("request gpio RK30_PIN2_PD4 failed, ret = %d ! \n",ret);
+		gpio_free(RK30_PIN2_PD4);
+		//return -1;
+	} else
+	{
+		gpio_direction_output(RK30_PIN2_PD4, 1);
+		gpio_set_value(RK30_PIN2_PD4, 1); 
+	}
+#endif (M7PRO)
+
+#if defined(CONFIG_AP6476) || defined (AP6210) || defined (AP6330)
+	ret = gpio_request(RK30_PIN1_PA7, "RK30_Wifi");
+	if (ret != 0) {
+		printk("######### request gpio RK30_PIN1_PA7 failed !\n");
+		gpio_free(RK30_PIN1_PA7);
+		//return -1;
+	} else
+	{
+		gpio_direction_input(RK30_PIN1_PA7);
+	}
+#endif (CONFIG_AP6476)	
 
 	rk30_i2c_register_board_info();
 	spi_register_board_info(board_spi_devices, ARRAY_SIZE(board_spi_devices));

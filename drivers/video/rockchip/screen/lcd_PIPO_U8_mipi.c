@@ -18,22 +18,23 @@
 #define OUT_FACE	    	OUT_P666  //OUT_P888
 
 
-#define DCLK	          	698*100000 //150*1000000
+#define DCLK	          	698*100000 
 #define LCDC_ACLK         	500000000           //29 lcdc axi DMA ?¦Ì?¨º
 
 /* Timing */
-#define H_PW			 64  //16
-#define H_BP			56 //40
-#define H_VD			768 //1920
-#define H_FP			60 //24
+#define H_PW			64  
+#define H_BP			56 
+#define H_VD			768 
+#define H_FP			60 
 
-#define V_PW			14//50 //6
-#define V_BP			30 // 26
-#define V_VD			1024 //1200
-#define V_FP			36 //4
+#define V_PW			14
+#define V_BP			30 
+#define V_VD			1024 
+#define V_FP			36 
 
-#define LCD_WIDTH         119 //204 
-#define LCD_HEIGHT         159//	136
+#define LCD_WIDTH         119  
+#define LCD_HEIGHT         159
+
 /* Other */
 #if defined(CONFIG_RK610_LVDS) || defined(CONFIG_RK616_LVDS) || defined(CONFIG_MIPI_DSI)
 #define DCLK_POL	1
@@ -48,7 +49,7 @@
 #define SWAP_RG		0
 #define SWAP_GB		0
 
-#define RK_SCREEN_INIT 	1
+//#define RK_SCREEN_INIT 	1
 
 /* about mipi */
 #define MIPI_DSI_LANE 4

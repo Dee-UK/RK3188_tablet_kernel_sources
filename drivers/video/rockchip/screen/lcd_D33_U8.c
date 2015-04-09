@@ -4,6 +4,7 @@
 #if defined(CONFIG_MIPI_DSI)
 #include "../transmitter/mipi_dsi.h"
 #endif
+
 #include <mach/board.h>
 #include <mach/gpio.h>
 #include <mach/io.h>
@@ -13,6 +14,7 @@
 #else
 #define SCREEN_TYPE	    	SCREEN_MIPI
 #endif
+
 #define LVDS_FORMAT         0     //mipi lcd don't need it, so 0 would be ok.
 #define OUT_FACE	    	OUT_P666  //OUT_P888
 
@@ -49,12 +51,12 @@
 #define SWAP_RG		0
 #define SWAP_GB		0
 
-#define RK_SCREEN_INIT 	1
-
 #define mipi_dsi_init(data) 				dsi_set_regs(data, ARRAY_SIZE(data))
 #define mipi_dsi_send_dcs_packet(data) 		dsi_send_dcs_packet(data, ARRAY_SIZE(data))
 #define mipi_dsi_post_init(data)			dsi_set_regs(data, ARRAY_SIZE(data))
 #define data_lane  4
+
+#define RK_SCREEN_INIT 	1
 
 static struct rk29lcd_info *gLcd_info = NULL;
 int lcd_init(void);
@@ -153,6 +155,7 @@ int lcd_init(void)
 	mipi_dsi_post_init(post_initialize);   
 
     return 0;
+
 }
 
 int lcd_standby(u8 enable)
@@ -165,6 +168,11 @@ int lcd_standby(u8 enable)
 		mipi_dsi_send_dcs_packet(dcs_enter_sleep_mode);
 		msleep(100);
 		dsi_power_off();
+		if(gLcd_info == NULL)
+		{
+			printk("lcd_standby... line = %d, gLcd_info = NULL\n", __LINE__);
+		}
+		printk("lcd_standby...  line = %d\n", __LINE__);
 		gpio_set_value(RK30_PIN0_PB0, 0);
 		gpio_set_value(RK30_PIN0_PA7, 0);
 	} else {
@@ -174,5 +182,4 @@ int lcd_standby(u8 enable)
 
     return 0;
 }
-
 #endif  
