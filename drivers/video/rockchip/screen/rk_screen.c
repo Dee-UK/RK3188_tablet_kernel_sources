@@ -1,6 +1,6 @@
 #include <linux/rk_fb.h>
 
-#if (defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M8PRO) || defined (CONFIG_PIPO_M9MAX) ) 
+#if (defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M8PRO)) 
 #include "lcd_dsi.h"
 #else
 #include "lcd.h"
@@ -14,9 +14,6 @@
 	#include <plat/config.h>
 	extern uint lcd_param[LCD_PARAM_MAX];
 #endif
-
-
-
 
 // if we use one lcdc with jetta for dual display,we need these configration
 #if defined(CONFIG_ONE_LCDC_DUAL_OUTPUT_INF) && defined(CONFIG_RK_HDMI)
@@ -304,7 +301,7 @@ void set_lcd_info(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 	#if defined(CONFIG_ONE_LCDC_DUAL_OUTPUT_INF) 
 	    	screen->sscreen_get = set_scaler_info;
 	#endif
-#if !defined(CONFIG_PIPO_U8)
+#if !(defined(CONFIG_PIPO_U8) || defined(CONFIG_PIPO_M9MAX))
 	msleep(100);
 	lcd_io_init();
 	msleep(200);

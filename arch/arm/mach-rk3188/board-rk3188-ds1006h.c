@@ -237,16 +237,16 @@ struct bp_platform_data bp_auto_info = {
 	.init_platform_hw 	= bp_io_init,	
 	.exit_platform_hw 	= bp_io_deinit,
 	.get_bp_id              = bp_id_get,
-	.bp_power 		= RK30_PIN0_PC6, 	// 3g_power,\B8\F9\BE\DD?\BC?\D3\CF\DF\C5\E4\D6\C3
+	.bp_power 		= RK30_PIN0_PC6, 	// 3g_power,
 	.bp_en 			= RK30_PIN2_PD5, 	// 3g_en
-	.bp_reset			= BP_UNKNOW_DATA,   //\B8\F9\BE\DD?\BC\CA\C5\E4\D6\C3
+	.bp_reset		= BP_UNKNOW_DATA,   
 	.bp_usb_en 		= RK30_PIN3_PB1, 	//W_disable
 	.bp_uart_en 		= RK30_PIN0_PC2, 	//EINT9
-	.bp_wakeup_ap 	= RK30_PIN0_PC5,	//\B8\F9\BE\DD?\BC?\D3\CF\DF\C5\E4\D6\C3
-	.ap_wakeup_bp 	= RK30_PIN0_PC4,	//\B8\F9\BE\DD?\BC\CA\C5\E4\D6\C3
-	.ap_ready 		= RK30_PIN0_PC4,//BP_UNKNOW_DATA,	//
+	.bp_wakeup_ap 		= RK30_PIN0_PC5,
+	.ap_wakeup_bp 		= RK30_PIN0_PC4,	
+	.ap_ready 		= RK30_PIN0_PC4,//BP_UNKNOW_DATA,
 	.bp_ready		= BP_UNKNOW_DATA,
-	.gpio_valid 		= 1,		//if 1:gpio is define in bp_auto_info,if 0:is not use gpio in bp_auto_info
+	.gpio_valid 		= 1,		// set to 1 to use gpio in bp_auto_info
 };
 
 
@@ -366,7 +366,7 @@ static struct ct360_platform_data ct3610_info = {
 #define L3G20D_INT_PIN	RK30_PIN0_PB4
 
 static int l3g20d_init_platform_hw(void)
-{
+{	
 		return 0;
 }
 
@@ -532,18 +532,19 @@ static int rk29_backlight_io_init(void)
 	ret = gpio_request(BL_EN_PIN, "bl_en");
 	if (ret != 0) {
 		gpio_free(BL_EN_PIN);
+	} else {
+		gpio_direction_output(BL_EN_PIN, 0);
+		gpio_set_value(BL_EN_PIN, BL_EN_VALUE);
 	}
-
-	gpio_direction_output(BL_EN_PIN, 0);
-	gpio_set_value(BL_EN_PIN, BL_EN_VALUE);
 
 	hubret = gpio_request(HUB_RST_PIN, "hub_rst");
 	if (hubret != 0) {
 		gpio_free(HUB_RST_PIN);
+	} else
+	{
+		gpio_direction_output(HUB_RST_PIN, 0);
+		gpio_set_value(HUB_RST_PIN, GPIO_HIGH);
 	}
-
-	gpio_direction_output(HUB_RST_PIN, 0);
-	gpio_set_value(HUB_RST_PIN, GPIO_HIGH);
 
 	return ret;
 }
@@ -556,11 +557,14 @@ static int rk29_backlight_io_deinit(void)
 	gpio_free(BL_EN_PIN);
 
 	int pwm_gpio = iomux_mode_to_gpio(PWM_MODE);
+
 	ret = gpio_request(pwm_gpio, "bl_pwm");
 	if (ret != 0) {
 		gpio_free(pwm_gpio);
+	} else
+	{
+		gpio_direction_output(pwm_gpio, GPIO_LOW);
 	}
-	gpio_direction_output(pwm_gpio, GPIO_LOW);
 
 	return ret;
 }
@@ -575,12 +579,14 @@ static int rk29_backlight_pwm_suspend(void)
 	if (ret != 0) {
 		gpio_free(pwm_gpio);
 		printk("func %s, line %d: request gpio fail\n", __FUNCTION__, __LINE__);
-	} //else
-	//{
+	} else
+	{
 		gpio_direction_output(pwm_gpio, GPIO_LOW);
-		gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);//d33 - !BL_EN_VALUE replaces 0
-		gpio_set_value(BL_EN_PIN, !BL_EN_VALUE);
-	//}
+	}
+	
+	gpio_direction_output(BL_EN_PIN, !BL_EN_VALUE);//d33 - !BL_EN_VALUE replaces 0
+	gpio_set_value(BL_EN_PIN, !BL_EN_VALUE);
+	
 	return ret;
 }
 
@@ -808,14 +814,17 @@ struct rk29_mt6229_data rk29_mt6229_info = {
   	.io_deinit = mt6229_io_deinit,
 	.modem_power_en = RK30_PIN0_PC6,
 	.bp_power = RK30_PIN2_PD5,
-	.modem_usb_en = RK30_PIN0_PC7,
+	//.bp_reset = RK30_PIN2_PD5,
+#if defined (CONFIG_PIPO_M7PRO)
+	.modem_usb_en = RK30_PIN3_PB1,
+	.modem_uart_en = RK30_PIN0_PC2,
+#else
+	.modem_usb_en = RK30_PIN0_PC7, 
 	.modem_uart_en = RK30_PIN2_PD4,
+#endif
 	.bp_wakeup_ap = RK30_PIN0_PC5,
 	.ap_ready = RK30_PIN0_PC4,
-	//.bp_reset = RK30_PIN2_PD5,
-	//.modem_usb_en = RK30_PIN3_PB1,//RK30_PIN0_PC7,
-	//.modem_uart_en = RK30_PIN0_PC2,//RK30_PIN2_PD4,
-};
+	};
 struct platform_device rk29_device_mt6229 = {	
         .name = "mt6229",	
     	.id = -1,	

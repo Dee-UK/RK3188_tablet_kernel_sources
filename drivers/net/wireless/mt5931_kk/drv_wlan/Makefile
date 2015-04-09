@@ -44,8 +44,8 @@ endif
 ccflags-y += -I$(src)/os -I$(src)/os/linux/include -I$(src)/os/linux/hif/sdio/include
 ccflags-y += -I$(src)/include -I$(src)/include/nic -I$(src)/include/mgmt
 
-obj-$(CONFIG_MTK_MT5931_WIFI) += $(MODULE_NAME).o
-obj-$(CONFIG_MTK_MT5931_POWER) += mtk_wmt_wifi.o
+obj-$(CONFIG_MTK_MT5931) += $(MODULE_NAME).o
+obj-$(CONFIG_MTK_MT5931) += mtk_wmt_wifi.o
 mtk_wmt_wifi-objs       := wmt_chrdev_wifi.o 
 #obj-m += $(MODULE_NAME).o
 

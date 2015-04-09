@@ -1,4 +1,3 @@
-
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -72,6 +71,11 @@ static ssize_t wifi_chip_read(struct class *cls, char *_buf)
     printk("Current WiFi chip is RTL8723AU.\n");
 #endif
 
+#ifdef CONFIG_RTL8723BU
+   count = sprintf(_buf, "%s", "RTL8723BU");
+   printk("Current WiFi chip is RTL8723BU.\n");
+#endif
+
 #ifdef CONFIG_RTL8723BS
     count = sprintf(_buf, "%s", "RTL8723BS");
     printk("Current WiFi chip is RTL8723BS.\n");
@@ -117,7 +121,7 @@ static ssize_t wifi_chip_read(struct class *cls, char *_buf)
 #endif
 #endif
 
-#ifdef CONFIG_AP6210 
+#ifdef CONFIG_AP6210
 #ifdef CONFIG_BCM_OOB_ENABLED
     count = sprintf(_buf, "%s", "OOB_RK901");
     printk("Current WiFi chip is AP6210(OOB)\n");
@@ -127,14 +131,9 @@ static ssize_t wifi_chip_read(struct class *cls, char *_buf)
 #endif
 #endif
 
-#ifdef CONFIG_AP6210_ALT 
-#ifdef CONFIG_BCM_OOB_ENABLED
-    count = sprintf(_buf, "%s", "OOB_RK901");
-    printk("Current WiFi chip is AP6210(OOB)\n");
-#else
-    count = sprintf(_buf, "%s", "RK901");
-    printk("Current WiFi chip is AP6210.\n");
-#endif
+#ifdef CONFIG_AP6234
+    count = sprintf(_buf, "%s", "AP6234");
+    printk("Current WiFi chip is AP6234.\n");
 #endif
 
 #ifdef CONFIG_AP6330
@@ -145,6 +144,16 @@ static ssize_t wifi_chip_read(struct class *cls, char *_buf)
     count = sprintf(_buf, "%s", "RK903");
     printk("Current WiFi chip is AP6330.\n");
 #endif
+#endif
+
+#ifdef CONFIG_AP6335
+    count = sprintf(_buf, "%s", "AP6335");
+    printk("Current WiFi chip is AP6335.\n");
+#endif
+
+#ifdef CONFIG_AP6441
+    count = sprintf(_buf, "%s", "AP6441");
+    printk("Current WiFi chip is AP6441.\n");
 #endif
 
 #ifdef CONFIG_AP6476
@@ -180,6 +189,11 @@ static ssize_t wifi_chip_read(struct class *cls, char *_buf)
 #ifdef CONFIG_MTK_COMBO
 	count = sprintf(_buf, "%s", "MT6620");
 	printk("Current WiFi chip is MT6620.\n");
+#endif
+
+#ifdef CONFIG_MTK_COMBO_WIFI
+        count = sprintf(_buf, "%s", "MT6620");
+        printk("Current WiFi chip is MT6620.\n");
 #endif
 
 #ifdef CONFIG_RT5370
@@ -333,6 +347,10 @@ int check_wifi_type_from_id(int id, char * _buf) {
 			count = sprintf(_buf, "%s", "RTL8723AU");
     		printk("Current WiFi chip is RTL8723AU.\n");
 			break;
+		case 0xB720:
+		    count = sprintf(_buf, "%s", "RTL8723BU");
+			printk("Current WiFi chip is RTL8723BU.\n");
+			break;
 		case 0x8176:
 			count = sprintf(_buf, "%s", "RTL8188CU");
     		printk("Current WiFi chip is RTL8188CU.\n");
@@ -408,6 +426,60 @@ static ssize_t wifi_aidc_read(struct class *cls, char *_buf)
 }
 #endif //CONFIG_AIDC
 
+extern int rk29sdk_wifi_power(int on);
+
+static ssize_t wifi_power_write(struct class *cls, struct class_attribute *attr, const char *_buf, size_t _count)
+{
+    int poweren = 0;
+    poweren = simple_strtol(_buf, NULL, 10);
+    printk("%s: poweren = %d\n", __func__, poweren);
+    if(poweren > 0) {
+        rk29sdk_wifi_power(1);
+    } else {
+        rk29sdk_wifi_power(0);
+    }
+
+return _count;
+}
+
+#ifdef CONFIG_WIFI_NONE
+int rockchip_wifi_init_module(void) {return 0;}
+void rockchip_wifi_exit_module(void) {return;}
+#else
+extern int rockchip_wifi_init_module(void);
+extern void rockchip_wifi_exit_module(void);
+#endif
+static struct semaphore driver_sem;
+static int wifi_driver_insmod = 0;
+
+static ssize_t wifi_driver_write(struct class *cls, struct class_attribute *attr, const char *_buf, size_t _count)
+{
+    printk (KERN_INFO, "D33 wifi driver write entered");
+    int enable = 0, ret = 0;
+#ifndef CONFIG_MTK_COMBO_MT66XX
+    down(&driver_sem);
+    enable = simple_strtol(_buf, NULL, 10);
+    printk("%s: enable = %d\n", __func__, enable);
+    if (wifi_driver_insmod == enable) {
+        printk("%s: wifi driver already %s\n", __func__, enable? "insmod":"rmmod");
+        up(&driver_sem);
+        return _count;
+    }
+    if(enable > 0) {
+        ret = rockchip_wifi_init_module();
+        if (ret >= 0)
+            wifi_driver_insmod = enable;
+    } else {
+        rockchip_wifi_exit_module();
+        wifi_driver_insmod = enable;
+    }
+
+    up(&driver_sem);
+#endif	
+    //printk("%s: ret = %d\n", __func__, ret);
+    return _count;
+}
+
 static struct class *rkwifi_class = NULL;
 static CLASS_ATTR(chip, 0664, wifi_chip_read, NULL);
 static CLASS_ATTR(p2p, 0664, wifi_p2p_read, NULL);
@@ -415,6 +487,8 @@ static CLASS_ATTR(pcba, 0664, wifi_pcba_read, wifi_pcba_write);
 #ifdef CONFIG_AIDC
 static CLASS_ATTR(aidc, 0664, wifi_aidc_read, NULL);
 #endif
+static CLASS_ATTR(power, 0660, NULL, wifi_power_write);
+static CLASS_ATTR(driver, 0660, NULL, wifi_driver_write);
 
 int rkwifi_sysif_init(void)
 {
@@ -437,6 +511,10 @@ int rkwifi_sysif_init(void)
 #ifdef CONFIG_AIDC
     ret =  class_create_file(rkwifi_class, &class_attr_aidc);
 #endif
+    ret =  class_create_file(rkwifi_class, &class_attr_power);
+    ret =  class_create_file(rkwifi_class, &class_attr_driver);
+    
+    sema_init(&driver_sem, 1);
     
     return 0;
 }
@@ -450,6 +528,8 @@ void rkwifi_sysif_exit(void)
 #ifdef CONFIG_AIDC
     class_remove_file(rkwifi_class, &class_attr_aidc);
 #endif
+    class_remove_file(rkwifi_class, &class_attr_power);
+    class_remove_file(rkwifi_class, &class_attr_driver);
     class_destroy(rkwifi_class);
     
     rkwifi_class = NULL;

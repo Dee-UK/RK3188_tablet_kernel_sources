@@ -111,7 +111,7 @@ choice
         select MAC80211
         ---help---
 
-source "drivers/net/wireless/mt5931/Kconfig"
+source "drivers/net/wireless/mt5931_kk/Kconfig"
 source "drivers/net/wireless/rkusbwifi/rtl8192cu/Kconfig"
 source "drivers/net/wireless/rkusbwifi/rtl8192du/Kconfig"
 source "drivers/net/wireless/rkusbwifi/rtl8188eu/Kconfig"
@@ -207,7 +207,6 @@ menuconfig MTK_WIRELESS_SOLUTION
 
 if MTK_WIRELESS_SOLUTION
 source "drivers/net/wireless/combo_mt66xx/Kconfig"
-source "drivers/net/wireless/mt5931_kk/Kconfig"
 endif # MTK_WIRELESS_SOLUTION
 
 endif
