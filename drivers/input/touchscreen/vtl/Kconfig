@@ -1,0 +1,71 @@
+#
+# modular VTL Tech CT36X Driver
+#
+
+menuconfig TOUCHSCREEN_CT36X_IIC
+	tristate "Modular VTL Tech CT36x Driver"
+	help
+	  Enable support for the VTL CT363/5 touchscreen driver.
+
+choice
+
+    depends on TOUCHSCREEN_CT36X_IIC
+	prompt  "Touchscreen Chip Selection"
+
+	config CT360_CHIP_VER
+		bool "CT360"
+
+	config CT363_CHIP_VER
+		bool "CT363/CT365"
+
+endchoice
+
+config TOUCH_MAX_X
+                int "touch max x resolution"
+                depends on TOUCHSCREEN_CT36X_IIC
+                default 1024
+                help
+                  CT36x touch max X resolution
+
+config TOUCH_MAX_Y
+                int "touch max y resolution"
+                depends on TOUCHSCREEN_CT36X_IIC
+                default 600
+                help
+                  CT36x touch max X resolution
+
+config X_REVERSE
+	bool "Reverse x-axis?"
+	depends on TOUCHSCREEN_CT36X_IIC
+	default n
+	help
+		CT36x X axis reverse
+config Y_REVERSE
+	bool "Reverse y-axis?"
+	depends on TOUCHSCREEN_CT36X_IIC
+	default n
+	help
+		CT36x y axis reverse
+
+config XY_SWAP
+	bool "Swap x&y axis?"
+	depends on TOUCHSCREEN_CT36X_IIC
+	default n
+	help
+		CT36x swap X/Y axis
+
+config CT36X_CHIP_UPDATE_SUPPORT
+	bool "Enable firmware update of CT36X"
+	depends on TOUCHSCREEN_CT36X_IIC
+	default n
+	help
+	  Enable Support of flashing new firmware to selected VTL chip.
+	  A valid image must be provided.
+	
+config CHIP_DRIVER_FILE
+	string "Firmware Image Blob Name"
+	depends on TOUCHSCREEN_CT36X_IIC && CT36X_CHIP_UPDATE_SUPPORT
+	default "CT360_ODYS_GENIO.DAT"
+	help
+	  Filename of the firmware image of the chip.
+	

@@ -1,0 +1,78 @@
+148c148
+< static const char bt_name_AP6330[]="ap6330";
+---
+> 
+335,347d334
+< #if 0//defined(CONFIG_AP6210)
+<         if (gpio_is_valid(rts->io))
+<         {
+<             if (rts->iomux.name)
+<             {
+<                 rk_mux_api_set(rts->iomux.name, rts->iomux.fgpio);
+<             }
+<             DBG("ENABLE UART_RTS\n");
+<             gpio_direction_output(rts->io, rts->enable);
+<             msleep(20);
+<         }
+< #endif
+< 
+361,371c348
+< #if defined(CONFIG_AP6210)
+<    	int et;
+< 	et = gpio_request(RK30_PIN1_PA7, NULL);	//Request IO
+< 	if (et !=  0)
+< 	{
+< 			gpio_free(RK30_PIN1_PA7);
+< 	}
+< 	//gpio_direction_output(RK30_PIN6_PA0, GPIO_LOW);	//
+< 	//gpio_direction_input(RK30_PIN1_PA7);
+< 	et = gpio_get_value(RK30_PIN1_PA7); 
+< 	if(!et){
+---
+> #if defined(CONFIG_AP6210) || defined(CONFIG_AP6335)
+378c355
+<             DBG("ENABLE UART_RTS\n");
+---
+>             LOG("ENABLE UART_RTS\n");
+383,396c360
+<             DBG("DISABLE UART_RTS\n");
+<             gpio_direction_output(rts->io, !rts->enable);
+<             if (rts->iomux.name)
+<             {
+<                 rk_mux_api_set(rts->iomux.name, rts->iomux.fmux);
+<             }
+<         }
+<       }
+< #endif
+< 
+< #if 0//defined(CONFIG_AP6210)
+<         if (gpio_is_valid(rts->io))
+<         {
+<             DBG("DISABLE UART_RTS\n");
+---
+>             LOG("DISABLE UART_RTS\n");
+587,597c551,553
+< 	struct proc_dir_entry *ent;
+<  	int et;
+< 	et = gpio_request(RK30_PIN1_PA7, NULL);	//Request IO
+< 	if (et !=  0)
+< 	{
+< 			gpio_free(RK30_PIN1_PA7);
+< 	}
+< 	//gpio_direction_output(RK30_PIN6_PA0, GPIO_LOW);	//
+< 	//gpio_direction_input(RK30_PIN1_PA7);
+< 	et = gpio_get_value(RK30_PIN1_PA7);
+<     printk("Enter *****hkw4569999999*** %s\n", __func__);
+---
+>     struct proc_dir_entry *ent;
+> 
+>     DBG("Enter %s\n", __func__);
+603c559
+<  if(!et)
+---
+> 
+605,606c561
+<  else
+<  	pdata->name = (char*)bt_name_AP6330;
+---
+> 

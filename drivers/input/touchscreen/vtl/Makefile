@@ -1,0 +1,1 @@
+obj-$(CONFIG_TOUCHSCREEN_CT36X_IIC)	+= ct36x_i2c_ts.o

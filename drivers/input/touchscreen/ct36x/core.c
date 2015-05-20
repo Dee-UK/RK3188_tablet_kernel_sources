@@ -8,10 +8,13 @@
 #define CT36X_CHIP_FLASH_SOURCE_SIZE	8
 
 static unsigned char binary_data[] = {
-#if defined(CONFIG_PIPO_M9PRO)
-#include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat"
+#if defined(CONFIG_CT36X_CHIP_UPDATE_SUPPORT)
+#include CONFIG_CHIP_DRIVER_FILE
 #else
-#include "LX20JS06_A1_CT363_V03_5198_121015.dat"
+//PIPO M9PRO driver
+//#include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat"
+//M7Pro
+#include "wgj05js892_89_CT363_V02_EF39_131019.dat"
 #endif
 };
 
@@ -310,6 +313,7 @@ int ct36x_chip_go_bootloader(struct ct36x_data *ts)
 		return -1;
 	}
 
+#if defined(CT36X_CHIP_UPDATE_SUPPORT)
 	// Erase flash
 	ret = ct36x_chip_era_flash(ts);
 	if ( ret < 0 ) {
@@ -323,5 +327,6 @@ int ct36x_chip_go_bootloader(struct ct36x_data *ts)
 		dev_err(ts->dev, "CT36X chip: Failed to write firmware\n");
 		return ret;
 	}
+#endif
 	return 0;
 }

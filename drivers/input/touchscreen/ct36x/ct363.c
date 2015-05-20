@@ -78,11 +78,12 @@ static int ct363_init(struct ct36x_data *ts)
 
 	ret = ct36x_chip_get_fwchksum(ts);
 	if(ret < 0){
-		dev_err(ts->dev, "CT36X chip: Failed to get fwchksum\n");
+		dev_err(ts->dev, "CT363 init: Failed to get fwchksum\n");
 		return ret;
 	}
 	fwchksum = ret;
 	ct36x_dbg(ts, "CT363 init: fwchksum = %d\n", fwchksum);
+#if defined(CT36X_CHIP_UPDATE_SUPPORT)
 	while(binchksum != fwchksum && updcnt--) {
 		/* Update Firmware */
 		ret = ct36x_chip_go_bootloader(ts);
@@ -109,7 +110,7 @@ static int ct363_init(struct ct36x_data *ts)
 	/* Hardware reset */
 	ct363_reset_hw(ts);
 	msleep(5);
-
+#endif //CT36X_CHIP_UPDATE_SUPPORT
 	ts->point_num = CT363_POINT_NUM;
 	
 	ct363 = kzalloc(sizeof(struct ct363_priv), GFP_KERNEL);
@@ -200,6 +201,14 @@ static void ct363_report(struct ct36x_data *ts)
 
 			ct363->x = ts->orientation[0] * x + ts->orientation[1] * y;
 			ct363->y = ts->orientation[2] * x + ts->orientation[3] * y;
+			
+			#if defined(CONFIG_CT36X_X_REVERSE)
+				ct363->x = ts->x_max - ct363->x;
+			#endif
+			#if defined(CONFIG_CT36X_Y_REVERSE)
+				ct363->y = ts->y_max - ct363->y;
+			#endif
+
 
                    if( (ct363->x > ts->x_max) || (ct363->y > ts->y_max) || (ct363->x < 0) || (ct363->y < 0) ){
                           continue ;

@@ -7,15 +7,15 @@
 int inline ct36x_set_ops(struct ct36x_data *ts, int model)
 {
 	switch(model){
-		case 360: ts->ops = &ct360_ops; break;
-		case 363: ts->ops = &ct363_ops; break;
-		default: return -EINVAL;
+		case 360: ts->ops = &ct360_ops; printk("CT360 selected\n"); break;
+		case 363: ts->ops = &ct363_ops; printk("CT363 selected\n"); break;
+		default: printk("no CT36x selected\n"); return -EINVAL;
 	};
 
 	return 0;
 }
 
-#ifndef CONFIG_CT36X_TS   //make modules
+#if !defined(CONFIG_TOUCHSCREEN_CT36X)  //make modules
 static int en = 0;
 module_param(en, int, 0644);
 
@@ -234,6 +234,8 @@ err_input_allocate_device:
 		ts->ops->deinit(ts);
 err_ct36x_init_chip:
 err_ct36x_set_ops:
+	gpio_free(ts->rst_io.gpio);
+	gpio_free(ts->irq_io.gpio);
 	i2c_set_clientdata(client, NULL);
 	kfree(ts);
 	return ret;
@@ -271,7 +273,7 @@ static struct i2c_driver ct36x_ts_driver = {
 
 static int __init ct36x_ts_init(void)
 {
-#ifndef CONFIG_CT36X_TS   //make modules
+#if !defined(CONFIG_TOUCHSCREEN_CT36X)   //make modules
 	int ret = 0;
 
 	ret = ct36x_check_param();

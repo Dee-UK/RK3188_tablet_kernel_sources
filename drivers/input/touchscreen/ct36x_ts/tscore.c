@@ -545,10 +545,16 @@ int __init ct36x_ts_init(void)
 	ct36x_platform_get_cfg(&ct36x_ts);
 
 	err = ct36x_platform_set_dev(&ct36x_ts);
-	if ( err ) goto ERR_INIT;
+	if ( err ) {
+		printk("VTL Rockchip: %s error calling set device\n", __FUNCTION__);
+		goto ERR_INIT;
+	}
 
 	err = i2c_add_driver(&ct36x_ts_driver);
-	if ( err ) goto ERR_INIT;
+	if ( err ) {
+		printk("VTL Rockchip: %s error calling i2C add driver\n", __FUNCTION__);
+		goto ERR_INIT;
+	}
 
 	return 0;
 

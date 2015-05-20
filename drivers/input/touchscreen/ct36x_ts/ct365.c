@@ -25,7 +25,6 @@ static char const binary_data[]=
 #endif
 
 #if defined (CONFIG_PIPO_M9PRO)
-//#include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat" 
 #include "wgj36js07_A1_CT363_V01_F78D_131018.dat"
 #endif
 
@@ -34,10 +33,11 @@ static char const binary_data[]=
 #endif
 
 
-#if !defined (CONFIG_PIPO_M6PRO) && !defined (CONFIG_PIPO_M8HD) && !defined (CONFIG_PIPO_M7PRO) && !defined (CONFIG_PIPO_M9PRO)
+#if !(defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M8HD) || defined (CONFIG_PIPO_M7PRO) || defined (CONFIG_PIPO_M9PRO))
+
+#include "CT363LR2030D_1920x1200_V25130327FN.dat"
 //#include "lx46js08_a1_CT363_V01_FE91_130116.dat"
 //#include "Five_F304_89_1920_1200_CT363_V06_03C2_130403.dat"
-#include "CT363LR2030D_1920x1200_V25130327FN.dat"
 //#include "CT36X_JS_DS_973H_LX20x30_V18120810W.dat"
 //#include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat"
 //#include "LX20JS06_A1_CT363_V03_5198_121015.dat"

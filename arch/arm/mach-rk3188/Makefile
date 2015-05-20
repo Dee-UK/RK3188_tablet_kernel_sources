@@ -27,3 +27,12 @@ board-$(CONFIG_MACH_RK3188_DS1006H) += board-rk3188-ds1006h.o
 obj-$(CONFIG_SOC_RK3188) += board.o
 board-$(CONFIG_MACH_RK3188_FAC) += board-rk3188-fac.o
 board-$(CONFIG_MACH_RK3188_U30GT2)  += board-rk3188-u30gt2.o
+board-$(CONFIG_PIPO_M6PRO)  += board-pipo-m6pro.o
+board-$(CONFIG_PIPO_M7PRO)  += board-pipo-m7pro.o
+board-$(CONFIG_PIPO_M8PRO)  += board-pipo-m8pro.o
+board-$(CONFIG_PIPO_M9PRO)  += board-pipo-m9pro.o
+board-$(CONFIG_PIPO_M8HD)  += board-pipo-m8hd.o
+board-$(CONFIG_PIPO_M9MAX)  += board-pipo-m9max.o
+board-$(CONFIG_PIPO_U8)  += board-pipo-u8.o
+board-$(CONFIG_PIPO_M6MAX)  += board-pipo-m6max.o
+

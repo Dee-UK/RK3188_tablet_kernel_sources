@@ -268,13 +268,16 @@ int ssd2828_vdd_disable(void *data) {
 
 
 int ssd2828_power_up(void) {
+
 	int ret = 0;
 	struct ssd2828_t *ssd = (struct ssd2828_t *)ssd2828;
 	struct spi_t *spi = &ssd2828->spi;
+
 	ssd->vdd_mipi.enable(&ssd->vdd_mipi);
 	ssd->vddio.enable(&ssd->vddio);
 	ssd->reset.do_reset(&ssd->reset);
 	ssd->shut.enable(&ssd->shut);
+// This appears to be hard coded vdd io?? D33
 	gpio_set_value(RK30_PIN0_PB0, 0);
 
 	gpio_direction_output(spi->cs, GPIO_HIGH);
@@ -533,6 +536,8 @@ int ssdgetvalue(void)
 	
 		ret=ssd_read_register(0xd6);
 		printk("the retd6 is %x\n",ret);
+
+		return 0; //D33 pointless!
 }
 
 

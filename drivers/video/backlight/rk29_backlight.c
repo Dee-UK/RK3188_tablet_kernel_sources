@@ -124,7 +124,7 @@ int rk29_bl_val_scalor_conic(struct rk29_bl_info *rk29_bl_info,int brightness)
 	//rk29_bl_min_brightness_check(rk29_bl_info);
 	//rk29_bl_max_brightness_check(rk29_bl_info);
 
-#if defined(CONFIG_PIPO_M7PRO)	
+#if defined(CONFIG_PIPO_M7PRO)	|| defined(CONFIG_PIPO_M8HD)
 	 brightness = rk29_bl_info->min_brightness+brightness * (rk29_bl_info->max_brightness - rk29_bl_info->min_brightness)/255;
 #else //for all not M7Pro
 	
@@ -158,7 +158,7 @@ static int rk29_bl_update_status(struct backlight_device *bl)
 	
 	mutex_lock(&backlight_mutex);
 	//BL_CORE_DRIVER2 is the flag if backlight is into early_suspend.
-#if !defined (CONFIG_PIPO_M7PRO)
+#if !defined (CONFIG_PIPO_M7PRO) || !defined(CONFIG_PIPO_M8HD)
 	if (suspend_flag && (bl->props.state & BL_CORE_DRIVER2))
 	    goto out;
 #endif
@@ -280,7 +280,7 @@ static void rk29_bl_resume(struct early_suspend *h)
 	DBG("%s : %s\n", __FILE__, __FUNCTION__);
 	rk29_bl->props.state &= ~BL_CORE_DRIVER2;
 	
-#if !defined (CONFIG_PIPO_M7PRO)
+#if !defined (CONFIG_PIPO_M7PRO) || !defined(CONFIG_PIPO_M8HD)
 	schedule_delayed_work(&rk29_backlight_work, msecs_to_jiffies(rk29_bl_info->delay_ms));
 #else
 	schedule_delayed_work(&rk29_backlight_work, 0);

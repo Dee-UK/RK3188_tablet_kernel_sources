@@ -292,9 +292,10 @@ static int sensor_powerdown_usr_cb (struct rk29camera_gpio_res *res,int on)
 static int sensor_init_flags = 0;
 static int sensor_flash_usr_cb (struct rk29camera_gpio_res *res,int on)
 {
-        if(sensor_init_flags == 0){
+        int ret;
+	if(sensor_init_flags == 0){
                 rk30_mux_api_set(CONFIG_SENSOR_FALSH_MODE_MUX_0, 0);
-                int ret = gpio_request(CONFIG_SENSOR_FALSH_MODE_PIN_0, "camera_flash_mode");
+                ret = gpio_request(CONFIG_SENSOR_FALSH_MODE_PIN_0, "camera_flash_mode");
                 if (ret != 0) {
                     printk(">>>>gpio request camera_flash_mode faile !!\n");
                 }

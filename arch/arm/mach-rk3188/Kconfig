@@ -16,37 +16,11 @@ choice
 	prompt "RK3188 Board Type"
 	depends on SOC_RK3188
 
-config MACH_RK3188_TB
-	bool "RK3188 Top Board"
-
-config MACH_RK3188_SDK
-	bool "RK3188 sdk Board"
-
-config MACH_RK3188_FPGA
-	bool "RK3188 FPGA board"
-	select RK_FPGA
-
-config MACH_RK3188_LR097
-        bool "RK3188 LR097 JC21CA board"
-
-config MACH_RK3188_DS1006H
-	bool "RK3188 ds1006h board"
-        
-config MACH_RK3188_FAC
-        bool "RK3188 Board for factory"
-        select MACH_RK_FAC
-
-config MACH_RK3188_U30GT2
-	bool "RK3188 u30gt2 board"
-	
-endchoice
-
-choice
-	prompt "RK3188 Tablet Type"
-	depends on MACH_RK3188_DS1006H
-
 config PIPO_M6PRO
 	bool "Pipo M6Pro"
+
+config PIPO_M6MAX
+	bool "Pipo M6Max"
 
 config PIPO_M7PRO
 	bool "Pipo M7Pro"
@@ -65,4 +39,28 @@ config PIPO_M9MAX
         
 config PIPO_U8
         bool "Pipo U8"
+
+config MACH_RK3188_U30GT2
+	bool "Cube U30GT2"
+
+config MACH_RK3188_DS1006H
+	bool "RK3188 ds1006h board"
+
+config MACH_RK3188_TB
+	bool "RK3188 Top Board"
+
+config MACH_RK3188_SDK
+	bool "RK3188 sdk Board"
+
+config MACH_RK3188_FPGA
+	bool "RK3188 FPGA board"
+	select RK_FPGA
+
+config MACH_RK3188_LR097
+        bool "RK3188 LR097 JC21CA board"
+        
+config MACH_RK3188_FAC
+        bool "RK3188 Board for factory"
+        select MACH_RK_FAC
+
 endchoice

@@ -100,24 +100,34 @@ int ct36x_platform_set_dev(struct ct36x_ts_info *ct36x_ts)
 
 int ct36x_platform_get_resource(struct ct36x_ts_info *ct36x_ts)
 {
-	int err = -1;
+	int ret_int = 0;
+	int ret_rst = 0;
 
 	// Init Reset pin
-	err = gpio_request(ct36x_ts->rst, "ct36x_ts_rst");
-	if ( err ) {
-		return -EIO;
-	}
+	ret_rst = gpio_request(ct36x_ts->rst, "ct36x_ts_rst");
+	if(ret_rst != 0){
+		gpio_free(ct36x_ts->rst);
+		printk("%s: ct363 rst irq request err\n", __func__);
+		goto RST_ERR;
+	} 
+	printk("%s: ct363 Reset GPIO set succesfully\n", __func__);
 	gpio_direction_output(ct36x_ts->rst, 1);
 	gpio_set_value(ct36x_ts->rst, 1);
 
 	// Init Int pin
-	err = gpio_request(ct36x_ts->ss, "ct36x_ts_int");
-	if ( err ) {
-		return -EIO;
+	ret_int = gpio_request(ct36x_ts->ss, "ct36x_ts_int");
+	if (ret_int != 0) {
+		gpio_free(ct36x_ts->ss);
+		printk("%s: ct363 ss irq request err\n", __func__);
+	} else
+	{
+		gpio_direction_input(ct36x_ts->ss);
+		printk("%s: ct363 Init GPIO set succesfully\n", __func__);
 	}
-	gpio_direction_input(ct36x_ts->ss);
-
-	return 0;
+	return ret_int;
+	
+	RST_ERR:
+	return ret_rst;
 }
 
 void ct36x_platform_put_resource(struct ct36x_ts_info *ct36x_ts)
@@ -128,22 +138,20 @@ void ct36x_platform_put_resource(struct ct36x_ts_info *ct36x_ts)
 
 void ct36x_platform_hw_reset(struct ct36x_ts_info *ct36x_ts)
 {
-	//printk(">>>>>444 %s() called <<<<< \n", __FUNCTION__);
+	printk("VTL Rockchip: %s entered\n", __FUNCTION__);
 	mdelay(500);
 	gpio_set_value(ct36x_ts->rst, 0);
 	mdelay(50);
 	gpio_set_value(ct36x_ts->rst, 1);
 	mdelay(500);
-	//printk(">>>>>555 %s() called <<<<< \n", __FUNCTION__);
 }
 
 void ct36x_platform_hw_reset_resume(struct ct36x_ts_info *ct36x_ts)
 {
-	//printk(">>>>>444 %s() called <<<<< \n", __FUNCTION__);
+	printk("VTL Rockchip: %s entered\n", __FUNCTION__);
 	mdelay(10);
 	gpio_set_value(ct36x_ts->rst, 0);
 	mdelay(50);
 	gpio_set_value(ct36x_ts->rst, 1);
 	mdelay(10);
-	//printk(">>>>>555 %s() called <<<<< \n", __FUNCTION__);
 }

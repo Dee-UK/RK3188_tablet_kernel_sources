@@ -1,13 +1,45 @@
 #
-# Adc hardware configuration
+#D33 CT36X Driver config
 #
 
-config CT360_TS
-	tristate "ct360"
+menuconfig TOUCHSCREEN_CT36X
+	tristate "D33 CT36x Driver"
+	help
+	  Enable support for the VTL CT363/5 touchscreen driver.
 
-config CT361_TS
-	tristate "ct361"
 
-config CT363_TS
-	tristate "ct363"
+config CT36X_X_REVERSE
+	bool "Reverse x-axis?"
+	depends on TOUCHSCREEN_CT36X
+	default n
+	help
+		CT36x X axis reverse
+config CT36X_Y_REVERSE
+	bool "Reverse y-axis?"
+	depends on TOUCHSCREEN_CT36X
+	default n
+	help
+		CT36x y axis reverse
 
+config CT36X_XY_SWAP
+	bool "Swap x&y axis?"
+	depends on TOUCHSCREEN_CT36X
+	default n
+	help
+		CT36x swap X/Y axis
+
+config CT36X_CHIP_UPDATE_SUPPORT
+	bool "Enable firmware update of CT36X"
+	depends on TOUCHSCREEN_CT36X
+	default n
+	help
+	  Enable Support of flashing new firmware to selected VTL chip.
+	  A valid image must be provided.
+	
+config CHIP_DRIVER_FILE
+	string "Firmware Image Blob Name"
+	depends on TOUCHSCREEN_CT36X && CT36X_CHIP_UPDATE_SUPPORT
+	default "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat"
+	help
+	  Filename of the firmware image of the chip.
+	

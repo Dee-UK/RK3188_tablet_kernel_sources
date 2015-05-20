@@ -824,7 +824,7 @@ struct rk29_mt6229_data rk29_mt6229_info = {
 	.modem_power_en = RK30_PIN2_PD5,
 	.bp_power = RK30_PIN0_PC6,
 	.bp_reset = RK30_PIN2_PD4,
-	.ap_wakeup_bp = RK30_PIN0_PC4,
+	//.ap_wakeup_bp = RK30_PIN0_PC4,
 	.bp_wakeup_ap = RK30_PIN0_PC5,
 };
 struct platform_device rk29_device_mt6229 = {	
@@ -2378,6 +2378,7 @@ if(codec_type == CODEC_TYPE_RK616){
 
 static int __init chg_board_init(void)
 {   
+	int i;
 	int ret = check_chg_param();        
 	if(ret < 0)                
 		return ret;  

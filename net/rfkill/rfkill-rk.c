@@ -45,7 +45,7 @@
 #include <linux/proc_fs.h>
 #include <linux/uaccess.h>
 
-#if 0
+#if 1
 #define DBG(x...)   printk(KERN_INFO "[BT_RFKILL]: "x)
 #else
 #define DBG(x...)
@@ -180,6 +180,8 @@ static int rfkill_rk_setup_gpio(struct rfkill_rk_gpio* gpio, int mux, const char
 		if (ret) {
 			LOG("Failed to get %s gpio.\n", gpio->name);
 			return -1;
+		} else {
+			DBG ("Succesfully gained %s gpio.\n", gpio->name);
 		}
         if (gpio->iomux.name)
         {
@@ -323,27 +325,33 @@ static int rfkill_rk_set_power(void *data, bool blocked)
 	struct rfkill_rk_data *rfkill = data;
     struct rfkill_rk_gpio *poweron = &rfkill->pdata->poweron_gpio;
     struct rfkill_rk_gpio *reset = &rfkill->pdata->reset_gpio;
+#if defined(CONFIG_AP6210) || defined(CONFIG_AP6335)
     struct rfkill_rk_gpio* rts = &rfkill->pdata->rts_gpio;
-
+#endif
     DBG("Enter %s\n", __func__);
 
     DBG("Set blocked:%d\n", blocked);
 
 	if (false == blocked) { 
-        rfkill_rk_sleep_bt(BT_WAKEUP); // ensure bt is wakeup
+        	DBG ("Blocked is set to false, Wakeup!");
+		rfkill_rk_sleep_bt(BT_WAKEUP); // ensure bt is wakeup
 
 		if (gpio_is_valid(poweron->io))
-        {
+        	{
 			gpio_direction_output(poweron->io, poweron->enable);
-            msleep(20);
-        }
+           		 msleep(20);
+        	} else {
+			DBG("Poweron GPIO is invalid");
+		}
 		if (gpio_is_valid(reset->io))
-        {
+        	{
 			gpio_direction_output(reset->io, reset->enable);
-            msleep(20);
+            		msleep(20);
 			gpio_direction_output(reset->io, !reset->enable);
-            msleep(20);
-        }
+            		msleep(20);
+        	} else {
+			DBG("Reset GPIO is invalid");
+		}
 
 #if defined(CONFIG_AP6210) || defined(CONFIG_AP6335)
         if (gpio_is_valid(rts->io))
@@ -366,17 +374,19 @@ static int rfkill_rk_set_power(void *data, bool blocked)
         }
 #endif
 
-    	LOG("bt turn on power\n");
-	} else {
+		LOG("bt turn on power\n");
+		} else {
 #if WIFI_BT_POWER_TOGGLE
 		if (!rk29sdk_wifi_power_state) {
 #endif
-            if (gpio_is_valid(poweron->io))
-            {      
-                gpio_direction_output(poweron->io, !poweron->enable);
-                msleep(20);
-            }
-
+		DBG("blocked is set to true");
+		if (gpio_is_valid(poweron->io)) {      
+                	gpio_direction_output(poweron->io, !poweron->enable);
+                	msleep(20);
+       		} else {
+			DBG("Poweron GPIO is invalid");
+		}
+            	
     		LOG("bt shut off power\n");
 #if WIFI_BT_POWER_TOGGLE
 		}else {
@@ -384,10 +394,12 @@ static int rfkill_rk_set_power(void *data, bool blocked)
 		}
 #endif
 		if (gpio_is_valid(reset->io))
-        {      
+        	{      
 			gpio_direction_output(reset->io, reset->enable);/* bt reset active*/
-            msleep(20);
-        }
+            		msleep(20);
+       		} else {
+			DBG("reset GPIO is invalid");
+		}
 	}
 
 #if WIFI_BT_POWER_TOGGLE

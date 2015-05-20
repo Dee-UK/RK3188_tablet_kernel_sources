@@ -3130,6 +3130,19 @@ static VOID __exit exitWlan(void)
     return;
 } /* end of exitWlan() */
 
+int rockchip_wifi_init_module(void)
+{
+	initWlan();
+}
+
+int rockchip_wifi_exit_module(void)
+{
+	//exitWlan();
+}
+
+EXPORT_SYMBOL(rockchip_wifi_init_module);
+EXPORT_SYMBOL(rockchip_wifi_exit_module);
+
 module_init(initWlan);
 module_exit(exitWlan);
 #if 0

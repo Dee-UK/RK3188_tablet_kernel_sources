@@ -1,10 +1,7 @@
 #include <linux/rk_fb.h>
+#include <linux/delay.h>
 
-#if (defined (CONFIG_PIPO_M6PRO) || defined (CONFIG_PIPO_M8PRO)) 
-#include "lcd_dsi.h"
-#else
 #include "lcd.h"
-#endif
 
 #if defined(CONFIG_RK_HDMI)
 	#include "../hdmi/rk_hdmi.h"
@@ -288,8 +285,8 @@ void set_lcd_info(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 
 	/* Operation function*/
 	#if defined(RK_SCREEN_INIT)  //some screen need to init by spi or i2c
-		screen->init = lcd_init;
-	   	screen->standby = lcd_standby;
+		screen->init = rk_lcd_init;
+	   	screen->standby = rk_lcd_standby;
 		if(lcd_info)
 	       		gLcd_info = lcd_info;	
 	#endif
@@ -301,16 +298,16 @@ void set_lcd_info(struct rk29fb_screen *screen, struct rk29lcd_info *lcd_info )
 	#if defined(CONFIG_ONE_LCDC_DUAL_OUTPUT_INF) 
 	    	screen->sscreen_get = set_scaler_info;
 	#endif
-#if !(defined(CONFIG_PIPO_U8) || defined(CONFIG_PIPO_M9MAX))
+
 	msleep(100);
-	lcd_io_init();
-	msleep(200);
 
 #if defined(CONFIG_MIPI_DSI)
+ 	lcd_io_init();
+	msleep(200);
     	dsi_probe_current_chip();
-#endif
 	msleep(100);
-#endif //U8
+#endif
+
 #endif 
 }
 

@@ -11,8 +11,8 @@ menuconfig INPUT_TOUCHSCREEN
 
 if INPUT_TOUCHSCREEN
 
-config CT36X_TS
-	tristate "CT36X touchscreens support"
+source "drivers/input/touchscreen/ct36x/Kconfig"
+source "drivers/input/touchscreen/vtl/Kconfig"
 
 config TOUCHSCREEN_GSLX680
 		tristate "gslX680 touchscreen panel support "
@@ -1030,9 +1030,9 @@ config TOUCHSCREEN_GT8110
         tristate "GT8110 based touchscreens"
         depends on I2C2_RK29 || I2C_RK30
 
-config TOUCHSCREEN_CT360_IIC
-	tristate "CT360 based touchscreens"
-	depends on I2C_RK29 || I2C_RK30
+#config TOUCHSCREEN_CT360_IIC
+#	tristate "CT360 based touchscreens"
+#	depends on I2C_RK29 || I2C_RK30
 
 config TOUCHSCREEN_FT5306
 	tristate "FT5306 based touchscreens: FT5306 Interface"
