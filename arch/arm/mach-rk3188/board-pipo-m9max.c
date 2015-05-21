@@ -988,101 +988,38 @@ struct rk29_sdmmc_platform_data default_sdmmc2_data = {
  * the end of setting for SDMMC devices
 **************************************************************************************************/
 
-//cw015 battery
-/*
-   note the follow array must set depend on the battery that you use
-   you must send the battery to cellwise-semi the contact information:
-   name: chen gan; tel:13416876079; E-mail: ben.chen@cellwise-semi.com
- */
-static u8 config_info[SIZE_BATINFO] = {
-
-//2- ?e��-_DS1006_JSH101_MB7600_ProfileV3LT_20 130705.txt
-    0x15, 0x17, 0x5B, 0x58, 0x57,
-	0x55, 0x4F, 0x4C, 0x4A, 0x49,
-	0x47, 0x45, 0x41, 0x37, 0x2E,
-	0x26, 0x1D, 0x19, 0x15, 0x17,
-	0x20, 0x3C, 0x48, 0x43, 0x35,
-	0x5A, 0x0A, 0xE1, 0x1C, 0x39,
-    0x44, 0x6D, 0x78, 0x6B, 0x66,
-	0x6B, 0x42, 0x1B, 0x52, 0x4D,
-	0x0F, 0x22, 0x52, 0x87, 0x8F,
-	0x91, 0x94, 0x52, 0x82, 0x8C,
-	0x92, 0x96, 0x2E, 0x82, 0xA5,
-	0xCB, 0x2F, 0x7D, 0x72, 0xA5,
-    0xB5, 0xC1, 0x27, 0x0A
-
+static int batt_table[2*11+6] =
+{
+	0x4B434F52, 0x7461625F, 0x79726574, 1, 390, 100,
+	6500, 7213, 7314, 7381, 7456, 7517, 7616, 7756, 7898, 8062, 8294,
+	7004, 7683, 7790, 7855, 7936, 8049, 8216, 8380, 8386, 8390, 8387
 };
 
-static struct cw_bat_platform_data cw_bat_platdata = {
-	.dc_det_pin	= RK30_PIN0_PB2,
-	.bat_low_pin    = RK30_PIN0_PB1,
- 	.chg_ok_pin	= RK30_PIN0_PA6,//INVALID_GPIO??
+static struct rk30_adc_battery_platform_data rk30_adc_battery_platdata = {
+        .dc_det_pin      = RK30_PIN0_PB2,
+        .batt_low_pin    = INVALID_GPIO, 
+        .charge_set_pin  = INVALID_GPIO,
+        .charge_ok_pin   = RK30_PIN0_PA6,
+        .usb_det_pin     = INVALID_GPIO,
+        .dc_det_level    = GPIO_LOW,
+        .charge_ok_level = GPIO_HIGH,
 
-	.dc_det_level	= GPIO_LOW,
-	.bat_low_level  = GPIO_LOW,   
-	.chg_ok_level	= GPIO_HIGH,
+	.reference_voltage = 1800, // the rK2928 is 3300;RK3066 and rk29 are 2500;rk3066B is 1800;
+        .pull_up_res       = 390,  // divider resistance, pull-up resistor
+        .pull_down_res     = 100,  // divider resistance, pull-down resistor
 
-	.cw_bat_config_info     = config_info,
+	.is_reboot_charging = 1,
+        .save_capacity      = 1,
+	.use_board_table    = 1,
+	.board_batt_table   = batt_table
 };
 
-// bluetooth rfkill device, its driver in net/rfkill/rfkill-rk.c
-static struct rfkill_rk_platform_data rfkill_rk_platdata = {
-    .type               = RFKILL_TYPE_BLUETOOTH,
-
-    .poweron_gpio       = { // BT_REG_ON
-        .io             = RK30_PIN3_PC7,
-        .enable         = GPIO_HIGH,
-        .iomux          = {
-            .name       = "bt_poweron",
-            .fgpio      = GPIO3_C7,
+static struct platform_device rk30_device_adc_battery = {
+        .name   = "rk30-battery",
+        .id     = -1,
+        .dev = {
+                .platform_data = &rk30_adc_battery_platdata,
         },
-    },
-
-    .reset_gpio         = { // BT_RST
-        .io             = RK30_PIN3_PD1, 
-        .enable         = GPIO_LOW,
-        .iomux          = {
-            .name       = "bt_reset",
-            .fgpio      = GPIO3_D1,
-       },
-   }, 
-
-    .wake_gpio          = { // BT_WAKE, use to control bt's sleep and wakeup
-        .io             = RK30_PIN3_PC6, // set io to INVALID_GPIO for disable it
-        .enable         = GPIO_HIGH,
-        .iomux          = {
-            .name       = "bt_wake",
-            .fgpio      = GPIO3_C6,
-        },
-    },
-
-    .wake_host_irq      = { // BT_HOST_WAKE, for bt wakeup host when it is in deep sleep
-        .gpio           = {
-            .io         = RK30_PIN0_PA5, // d33 standard setting
-            .enable     = GPIO_LOW,      // set GPIO_LOW for falling, set 0 for rising
-            .iomux      = {
-                .name   = "bt_host_wake",
-            },
-        },
-    },
-
-    .rts_gpio           = { // UART_RTS, enable or disable BT's data coming
-        .io             = RK30_PIN1_PA3, // set io to INVALID_GPIO for disable it
-        .enable         = GPIO_LOW,
-        .iomux          = {
-            .name       = "bt_rts",
-            .fgpio      = GPIO1_A3,
-            .fmux       = UART0_RTSN,
-        },
-    },
-};
-
-static struct platform_device device_rfkill_rk = {
-    .name   = "rfkill_rk",
-    .id     = -1,
-    .dev    = {
-        .platform_data = &rfkill_rk_platdata,
-    },
 };
 
 
@@ -1262,8 +1199,8 @@ static struct platform_device device_mt6622 = {
 static struct platform_device *devices[] __initdata = {
 	&device_ion,
 	&rk29sdk_wifi_device,
-	&device_rfkill_rk,
 	&rk_device_gps,
+	&rk30_device_adc_battery,
 	&device_mt6622,
 #if defined(CONFIG_MT6229)
 	&rk29_device_mt6229,
@@ -1466,12 +1403,6 @@ static struct i2c_board_info __initdata i2c1_info[] = {
 		.addr           = 0x51,
 		.flags                  = 0,
 		.irq            = RK30_PIN0_PB5,
-	},
-	{
-        	.type           = "cw201x",
-        	.addr           = 0x62,
-        	.flags          = 0,
-        	.platform_data  = &cw_bat_platdata,
 	},
 
 };
