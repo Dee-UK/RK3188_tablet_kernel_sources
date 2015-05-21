@@ -11,10 +11,12 @@ static unsigned char binary_data[] = {
 #if defined(CONFIG_CT36X_CHIP_UPDATE_SUPPORT)
 #include CONFIG_CHIP_DRIVER_FILE
 #else
-//PIPO M9PRO driver
+//PIPO M9 PRO driver
 //#include "lx62js07_1920x1200_A1_CT363_V01_E087_130711.dat"
-//M7Pro
+//M7 Pro
 #include "wgj05js892_89_CT363_V02_EF39_131019.dat"
+//M9 Max
+//#include "lx46js08_a1_CT363_V01_FE91_130116.dat
 #endif
 };
 
