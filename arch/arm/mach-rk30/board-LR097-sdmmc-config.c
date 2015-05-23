@@ -56,18 +56,18 @@
 * Otherwise, you do not define this macro, eliminate it.
 *
 */          
-#if defined(CONFIG_RTL8192CU) || defined(CONFIG_RTL8188EU) || defined(CONFIG_RTL8192DU)
+#if defined(CONFIG_RTL8192CU) || defined(CONFIG_RTL8188EU) 
     #define RK30SDK_WIFI_GPIO_POWER_N               RK30_PIN3_PD0            
     #define RK30SDK_WIFI_GPIO_POWER_ENABLE_VALUE    GPIO_LOW//GPIO_HIGH        
     
-#elif defined(CONFIG_BCM4329) || defined(CONFIG_BCM4319) || defined(CONFIG_RK903) || defined(CONFIG_RK901)
+#elif defined(CONFIG_BCM4329) || defined(CONFIG_BCM4319) || defined(CONFIG_RK903) || defined(CONFIG_RK901) || defined(CONFIG_AP6330)
     #define RK30SDK_WIFI_GPIO_POWER_N               RK30_PIN3_PD0                 
     #define RK30SDK_WIFI_GPIO_POWER_ENABLE_VALUE    GPIO_HIGH                   
 
     #define RK30SDK_WIFI_GPIO_RESET_N               RK30_PIN2_PA7
     #define RK30SDK_WIFI_GPIO_RESET_ENABLE_VALUE    GPIO_HIGH 
 
-#elif defined(CONFIG_MT5931_MT6622) || defined(CONFIG_MT5931) || defined(CONFIG_MTK_MT5931)
+#elif defined(CONFIG_MT5931_MT6622) || defined(CONFIG_MT5931)
 
 	#if 1
     	#define RK30SDK_WIFI_GPIO_POWER_N               RK30_PIN3_PD0 
@@ -127,10 +127,10 @@ double rk31sdk_get_sdio_wifi_voltage(void)
     /******************************************************************************
     **  Please tell me how much wifi-module uses voltage in your project.  
     ******************************************************************************/
-#if defined(CONFIG_BCM4329) || defined(CONFIG_BCM4319) || defined(CONFIG_RK903) || defined(CONFIG_RK901)
+#if defined(CONFIG_BCM4329) || defined(CONFIG_BCM4319) || defined(CONFIG_RK903) || defined(CONFIG_RK901) || defined(CONFIG_AP6330)
     voltage = 1800 ; //power 1.8V
     
-#elif defined(CONFIG_MT5931_MT6622)||defined(CONFIG_MT5931)||defined(CONFIG_MT6620)||defined(CONFIG_MTK_MT5931)
+#elif defined(CONFIG_MT5931_MT6622)||defined(CONFIG_MT5931)||defined(CONFIG_MT6620)
     voltage = 1800 ; //power 2.8V
 #elif defined(CONFIG_RDA5990)||defined(CONFIG_RTL8723AS)  
     voltage = 3300 ; //power 3.3V
