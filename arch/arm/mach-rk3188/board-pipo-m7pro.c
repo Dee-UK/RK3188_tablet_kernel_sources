@@ -259,7 +259,7 @@ static struct sensor_platform_data akm8963_info =
        .type = SENSOR_TYPE_COMPASS,
        .irq_enable = 1,
        //.poll_delay_ms = 0,
-       .layout = 5,	
+       .layout = 8,	//5
        .m_layout =
        {
 			   {
@@ -287,6 +287,14 @@ static struct sensor_platform_data akm8963_info =
                },
        }
 };
+
+static struct sensor_platform_data light_photoresistor_info = {
+	.type = SENSOR_TYPE_LIGHT,
+	.irq_enable = 0,
+        .address = 2   ,
+	.poll_delay_ms = 200,
+};
+
 
 #if defined(CONFIG_MT6229) //3g modem
 static int mt6229_io_init(void)
@@ -1179,6 +1187,13 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.platform_data = &akm8963_info,
 	},
 
+	{
+		.type           = "ls_photoresistor",
+		.addr           = 0x5e,            
+		.flags          = 0,
+		.irq            = INVALID_GPIO,	
+		.platform_data = &light_photoresistor_info,
+	},
 //gyro
 	{
 		.type          = "l3g4200d_gryo",

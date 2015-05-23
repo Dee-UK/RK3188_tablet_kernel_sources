@@ -335,7 +335,7 @@ static struct rk29camera_platform_data rk_camera_platform_data = {
             .gpio_reset = CONFIG_SENSOR_RESET_PIN_0,
             .gpio_power = CONFIG_SENSOR_POWER_PIN_0,
             .gpio_powerdown = CONFIG_SENSOR_POWERDN_PIN_0,
-            .gpio_flash = CONFIG_SENSOR_FALSH_PIN_0,
+            .gpio_flash = CONFIG_SENSOR_FLASH_PIN_0,
             .gpio_flag = (CONFIG_SENSOR_POWERACTIVE_LEVEL_0|CONFIG_SENSOR_RESETACTIVE_LEVEL_0|CONFIG_SENSOR_POWERDNACTIVE_LEVEL_0|CONFIG_SENSOR_FLASHACTIVE_LEVEL_0),
             .gpio_init = 0,            
             .dev_name = SENSOR_DEVICE_NAME_0,
@@ -353,7 +353,7 @@ static struct rk29camera_platform_data rk_camera_platform_data = {
             .gpio_reset = CONFIG_SENSOR_RESET_PIN_1,
             .gpio_power = CONFIG_SENSOR_POWER_PIN_1,
             .gpio_powerdown = CONFIG_SENSOR_POWERDN_PIN_1,
-            .gpio_flash = CONFIG_SENSOR_FALSH_PIN_1,
+            .gpio_flash = CONFIG_SENSOR_FLASH_PIN_1,
             .gpio_flag = (CONFIG_SENSOR_POWERACTIVE_LEVEL_1|CONFIG_SENSOR_RESETACTIVE_LEVEL_1|CONFIG_SENSOR_POWERDNACTIVE_LEVEL_1|CONFIG_SENSOR_FLASHACTIVE_LEVEL_1),
             .gpio_init = 0,
             .dev_name = SENSOR_DEVICE_NAME_1,
@@ -373,7 +373,7 @@ static struct rk29camera_platform_data rk_camera_platform_data = {
             .gpio_reset = CONFIG_SENSOR_RESET_PIN_01,
             .gpio_power = CONFIG_SENSOR_POWER_PIN_01,
             .gpio_powerdown = CONFIG_SENSOR_POWERDN_PIN_01,
-            .gpio_flash = CONFIG_SENSOR_FALSH_PIN_01,
+            .gpio_flash = CONFIG_SENSOR_FLASH_PIN_01,
             .gpio_flag = (CONFIG_SENSOR_POWERACTIVE_LEVEL_01|CONFIG_SENSOR_RESETACTIVE_LEVEL_01|CONFIG_SENSOR_POWERDNACTIVE_LEVEL_01|CONFIG_SENSOR_FLASHACTIVE_LEVEL_01),
             .gpio_init = 0,            
             .dev_name = SENSOR_DEVICE_NAME_01,
@@ -394,7 +394,7 @@ static struct rk29camera_platform_data rk_camera_platform_data = {
             .gpio_reset = CONFIG_SENSOR_RESET_PIN_02,
             .gpio_power = CONFIG_SENSOR_POWER_PIN_02,
             .gpio_powerdown = CONFIG_SENSOR_POWERDN_PIN_02,
-            .gpio_flash = CONFIG_SENSOR_FALSH_PIN_02,
+            .gpio_flash = CONFIG_SENSOR_FLASH_PIN_02,
             .gpio_flag = (CONFIG_SENSOR_POWERACTIVE_LEVEL_02|CONFIG_SENSOR_RESETACTIVE_LEVEL_02|CONFIG_SENSOR_POWERDNACTIVE_LEVEL_02|CONFIG_SENSOR_FLASHACTIVE_LEVEL_02),
             .gpio_init = 0,            
             .dev_name = SENSOR_DEVICE_NAME_02, 
@@ -415,7 +415,7 @@ static struct rk29camera_platform_data rk_camera_platform_data = {
             .gpio_reset = CONFIG_SENSOR_RESET_PIN_11,
             .gpio_power = CONFIG_SENSOR_POWER_PIN_11,
             .gpio_powerdown = CONFIG_SENSOR_POWERDN_PIN_11,
-            .gpio_flash = CONFIG_SENSOR_FALSH_PIN_11,
+            .gpio_flash = CONFIG_SENSOR_FLASH_PIN_11,
             .gpio_flag = (CONFIG_SENSOR_POWERACTIVE_LEVEL_11|CONFIG_SENSOR_RESETACTIVE_LEVEL_11|CONFIG_SENSOR_POWERDNACTIVE_LEVEL_11|CONFIG_SENSOR_FLASHACTIVE_LEVEL_11),
             .gpio_init = 0,
             .dev_name = SENSOR_DEVICE_NAME_11,
@@ -436,7 +436,7 @@ static struct rk29camera_platform_data rk_camera_platform_data = {
             .gpio_reset = CONFIG_SENSOR_RESET_PIN_12,
             .gpio_power = CONFIG_SENSOR_POWER_PIN_12,
             .gpio_powerdown = CONFIG_SENSOR_POWERDN_PIN_12,
-            .gpio_flash = CONFIG_SENSOR_FALSH_PIN_12,
+            .gpio_flash = CONFIG_SENSOR_FLASH_PIN_12,
             .gpio_flag = (CONFIG_SENSOR_POWERACTIVE_LEVEL_12|CONFIG_SENSOR_RESETACTIVE_LEVEL_12|CONFIG_SENSOR_POWERDNACTIVE_LEVEL_12|CONFIG_SENSOR_FLASHACTIVE_LEVEL_12),
             .gpio_init = 0,
             .dev_name = SENSOR_DEVICE_NAME_12,
@@ -1215,7 +1215,7 @@ static int _rk_sensor_io_init_(struct rk29camera_gpio_res *gpio_res)
         }
         
 		gpio_res->gpio_init |= RK29_CAM_FLASHACTIVE_MASK;
-        gpio_set_value(camera_flash, ((~camera_ioflag&RK29_CAM_FLASHACTIVE_MASK)>>RK29_CAM_FLASHACTIVE_BITPOS));    /* falsh off */
+        gpio_set_value(camera_flash, ((~camera_ioflag&RK29_CAM_FLASHACTIVE_MASK)>>RK29_CAM_FLASHACTIVE_BITPOS));    /* FLASH off */
         gpio_direction_output(camera_flash, ((~camera_ioflag&RK29_CAM_FLASHACTIVE_MASK)>>RK29_CAM_FLASHACTIVE_BITPOS));
 
 		dprintk("%s flash pin(%d) init success(0x%x)",gpio_res->dev_name, camera_flash,((camera_ioflag&RK29_CAM_FLASHACTIVE_MASK)>>RK29_CAM_FLASHACTIVE_BITPOS));

@@ -71,7 +71,7 @@ static struct rkcamera_platform_data new_camera[] = {
 #define CONFIG_SENSOR_RESET_PIN_0		  INVALID_GPIO
 #define CONFIG_SENSOR_POWERDN_PIN_0 	  RK30_PIN3_PB5
 
-#define CONFIG_SENSOR_FALSH_PIN_0		  RK30_PIN0_PD5//RK30_PIN0_PC3
+#define CONFIG_SENSOR_FLASH_PIN_0		  RK30_PIN0_PD5//RK30_PIN0_PC3
 
 #define CONFIG_SENSOR_POWERACTIVE_LEVEL_0 RK29_CAM_POWERACTIVE_L
 #define CONFIG_SENSOR_RESETACTIVE_LEVEL_0 RK29_CAM_RESETACTIVE_L
@@ -94,7 +94,7 @@ static struct rkcamera_platform_data new_camera[] = {
 #define CONFIG_SENSOR_POWER_PIN_01         INVALID_GPIO
 #define CONFIG_SENSOR_RESET_PIN_01         INVALID_GPIO
 #define CONFIG_SENSOR_POWERDN_PIN_01       RK30_PIN1_PD6
-#define CONFIG_SENSOR_FALSH_PIN_01         INVALID_GPIO
+#define CONFIG_SENSOR_FLASH_PIN_01         INVALID_GPIO
 #define CONFIG_SENSOR_POWERACTIVE_LEVEL_01 RK29_CAM_POWERACTIVE_L
 #define CONFIG_SENSOR_RESETACTIVE_LEVEL_01 RK29_CAM_RESETACTIVE_L
 #define CONFIG_SENSOR_POWERDNACTIVE_LEVEL_01 RK29_CAM_POWERDNACTIVE_H
@@ -117,7 +117,7 @@ static struct rkcamera_platform_data new_camera[] = {
 #define CONFIG_SENSOR_POWER_PIN_02         INVALID_GPIO
 #define CONFIG_SENSOR_RESET_PIN_02         INVALID_GPIO
 #define CONFIG_SENSOR_POWERDN_PIN_02       INVALID_GPIO
-#define CONFIG_SENSOR_FALSH_PIN_02         INVALID_GPIO
+#define CONFIG_SENSOR_FLASH_PIN_02         INVALID_GPIO
 #define CONFIG_SENSOR_POWERACTIVE_LEVEL_02 RK29_CAM_POWERACTIVE_L
 #define CONFIG_SENSOR_RESETACTIVE_LEVEL_02 RK29_CAM_RESETACTIVE_L
 #define CONFIG_SENSOR_POWERDNACTIVE_LEVEL_02 RK29_CAM_POWERDNACTIVE_H
@@ -139,7 +139,7 @@ static struct rkcamera_platform_data new_camera[] = {
 #define CONFIG_SENSOR_POWER_PIN_1         INVALID_GPIO
 #define CONFIG_SENSOR_RESET_PIN_1         INVALID_GPIO
 #define CONFIG_SENSOR_POWERDN_PIN_1 	  RK30_PIN3_PB4
-#define CONFIG_SENSOR_FALSH_PIN_1         INVALID_GPIO
+#define CONFIG_SENSOR_FLASH_PIN_1         INVALID_GPIO
 #define CONFIG_SENSOR_POWERACTIVE_LEVEL_1 RK29_CAM_POWERACTIVE_L
 #define CONFIG_SENSOR_RESETACTIVE_LEVEL_1 RK29_CAM_RESETACTIVE_L
 #define CONFIG_SENSOR_POWERDNACTIVE_LEVEL_1 RK29_CAM_POWERDNACTIVE_H
@@ -161,7 +161,7 @@ static struct rkcamera_platform_data new_camera[] = {
 #define CONFIG_SENSOR_POWER_PIN_11         INVALID_GPIO
 #define CONFIG_SENSOR_RESET_PIN_11         INVALID_GPIO
 #define CONFIG_SENSOR_POWERDN_PIN_11       INVALID_GPIO//RK30_PIN1_PB7
-#define CONFIG_SENSOR_FALSH_PIN_11         INVALID_GPIO
+#define CONFIG_SENSOR_FLASH_PIN_11         INVALID_GPIO
 #define CONFIG_SENSOR_POWERACTIVE_LEVEL_11 RK29_CAM_POWERACTIVE_L
 #define CONFIG_SENSOR_RESETACTIVE_LEVEL_11 RK29_CAM_RESETACTIVE_L
 #define CONFIG_SENSOR_POWERDNACTIVE_LEVEL_11 RK29_CAM_POWERDNACTIVE_H
@@ -183,7 +183,7 @@ static struct rkcamera_platform_data new_camera[] = {
 #define CONFIG_SENSOR_POWER_PIN_12         INVALID_GPIO
 #define CONFIG_SENSOR_RESET_PIN_12         INVALID_GPIO
 #define CONFIG_SENSOR_POWERDN_PIN_12       INVALID_GPIO//RK30_PIN1_PB7
-#define CONFIG_SENSOR_FALSH_PIN_12         INVALID_GPIO
+#define CONFIG_SENSOR_FLASH_PIN_12         INVALID_GPIO
 #define CONFIG_SENSOR_POWERACTIVE_LEVEL_12 RK29_CAM_POWERACTIVE_L
 #define CONFIG_SENSOR_RESETACTIVE_LEVEL_12 RK29_CAM_RESETACTIVE_L
 #define CONFIG_SENSOR_POWERDNACTIVE_LEVEL_12 RK29_CAM_POWERDNACTIVE_H
@@ -274,17 +274,17 @@ static int sensor_powerdown_usr_cb (struct rk29camera_gpio_res *res,int on)
 #if CONFIG_SENSOR_FLASH_IOCTL_USR
 
 #if defined(CONFIG_PIPO_M9MAX) || defined(CONFIG_PIPO_M6PRO)//d33 M9max m6pro 
-	#define CONFIG_SENSOR_FALSH_EN_PIN_0		  RK30_PIN0_PD5
-	#define CONFIG_SENSOR_FALSH_EN_MUX_0		  GPIO0D5_SPI1TXD_NAME
-	#define CONFIG_SENSOR_FALSH_MODE_PIN_0		  RK30_PIN0_PD4 //high:FLASH, low:torch
-	#define CONFIG_SENSOR_FALSH_MODE_MUX_0		  GPIO0D4_SPI1RXD_NAME
+	#define CONFIG_SENSOR_FLASH_EN_PIN_0	RK30_PIN0_PD5
+	#define CONFIG_SENSOR_FLASH_EN_MUX_0	GPIO0D5_SPI1TXD_NAME
+	#define CONFIG_SENSOR_FLASH_MODE_PIN_0	RK30_PIN0_PD4 //high:FLASH, low:torch
+	#define CONFIG_SENSOR_FLASH_MODE_MUX_0	GPIO0D4_SPI1RXD_NAME
 
 #else //d33 m9pro
 
-	#define CONFIG_SENSOR_FALSH_EN_PIN_0		  RK30_PIN1_PB6
-	#define CONFIG_SENSOR_FALSH_EN_MUX_0		  GPIO1B6_SPDIFTX_SPI1CSN1_NAME
-	#define CONFIG_SENSOR_FALSH_MODE_PIN_0		  RK30_PIN3_PD5 //high:FLASH, low:torch
-	#define CONFIG_SENSOR_FALSH_MODE_MUX_0		  GPIO3D5_PWM2_JTAGTCK_OTGDRVVBUS_NAME
+	#define CONFIG_SENSOR_FLASH_EN_PIN_0	RK30_PIN1_PB6 //orig. RK30_PIN0_PC3
+	#define CONFIG_SENSOR_FLASH_EN_MUX_0	GPIO1B6_SPDIFTX_SPI1CSN1_NAME
+	#define CONFIG_SENSOR_FLASH_MODE_PIN_0	RK30_PIN3_PD5 //high:FLASH, low:torch
+	#define CONFIG_SENSOR_FLASH_MODE_MUX_0	GPIO3D5_SPI1RXD_NAME //GPIO3D5_PWM2_JTAGTCK_OTGDRVVBUS_NAME
 
 #endif
 
@@ -293,37 +293,38 @@ static int sensor_flash_usr_cb (struct rk29camera_gpio_res *res,int on)
 {
         int ret;
 	if(sensor_init_flags == 0){
-                rk30_mux_api_set(CONFIG_SENSOR_FALSH_MODE_MUX_0, 0);
-                ret = gpio_request(CONFIG_SENSOR_FALSH_MODE_PIN_0, "camera_flash_mode");
+                rk30_mux_api_set(CONFIG_SENSOR_FLASH_MODE_MUX_0, 0);
+                ret = gpio_request(CONFIG_SENSOR_FLASH_MODE_PIN_0, "camera_flash_mode");
                 if (ret != 0) {
-                    printk(">>>>gpio request camera_flash_mode faile !!\n");
+                    printk(">>>>gpio request camera_flash_mode failed !!\n");
                 }
+		printk(">>>>gpio request camera_flash_mode success\n");
                 
-                gpio_direction_output(CONFIG_SENSOR_FALSH_MODE_PIN_0, 0);
+                gpio_direction_output(CONFIG_SENSOR_FLASH_MODE_PIN_0, 0);
                 sensor_init_flags = 1 ;
         }
         switch (on) {
 		case Flash_Off: {
-			gpio_set_value(CONFIG_SENSOR_FALSH_EN_PIN_0, 0);
-			gpio_set_value(CONFIG_SENSOR_FALSH_MODE_PIN_0, 0);
+			gpio_set_value(CONFIG_SENSOR_FLASH_EN_PIN_0, 0);
+			gpio_set_value(CONFIG_SENSOR_FLASH_MODE_PIN_0, 0);
 			break;
 		}
 
 		case Flash_On: {
-			gpio_set_value(CONFIG_SENSOR_FALSH_EN_PIN_0, 1);
-			gpio_set_value(CONFIG_SENSOR_FALSH_MODE_PIN_0, 1);
+			gpio_set_value(CONFIG_SENSOR_FLASH_EN_PIN_0, 1);
+			gpio_set_value(CONFIG_SENSOR_FLASH_MODE_PIN_0, 1);
 			break;
 		}
 
 		case Flash_Torch: {
-			gpio_set_value(CONFIG_SENSOR_FALSH_EN_PIN_0, 1);
-			gpio_set_value(CONFIG_SENSOR_FALSH_MODE_PIN_0, 0);
+			gpio_set_value(CONFIG_SENSOR_FLASH_EN_PIN_0, 1);
+			gpio_set_value(CONFIG_SENSOR_FLASH_MODE_PIN_0, 0);
 			break;
 		}
 
 		default: {
 			printk("%s..Flash command(%d) is invalidate \n",__FUNCTION__, on);
-			gpio_set_value(CONFIG_SENSOR_FALSH_EN_PIN_0, 0);
+			gpio_set_value(CONFIG_SENSOR_FLASH_EN_PIN_0, 0);
 			break;
 		}
 	}
