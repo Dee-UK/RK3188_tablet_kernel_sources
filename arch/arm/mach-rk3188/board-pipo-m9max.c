@@ -128,8 +128,6 @@ extern int get_harware_version()
         return 2;
 }
 
-#if defined(CONFIG_TOUCHSCREEN_CT36X) || defined(CONFIG_CT36X_TS)
-
 static struct ct36x_platform_data ct36x_info = {
 	.model   = 363,
 	.x_max   = 1280,
@@ -146,29 +144,8 @@ static struct ct36x_platform_data ct36x_info = {
 
 };
 
-#endif
 
-#if defined(CONFIG_GYRO_L3G20D)
-#include <linux/l3g4200d.h>
-#define L3G20D_INT_PIN	RK30_PIN0_PB4
 
-static int l3g20d_init_platform_hw(void)
-{	
-		return 0;
-}
-
-static struct sensor_platform_data l3g20d_info = {
-		.type = SENSOR_TYPE_GYROSCOPE,
-		.irq_enable = 1,
-		.poll_delay_ms = 0, //30,
-		.orientation = {1, 0, 0, 0, -1, 0, 0, 0, -1},
-		.init_platform_hw = l3g20d_init_platform_hw,
-		.x_min = 40,//x_min,y_min,z_min = (0-100) according to hardware
-		.y_min = 40,
-		.z_min = 20,
-};
-
-#endif
 
 static struct spi_board_info board_spi_devices[] = {
 };
@@ -290,24 +267,6 @@ static struct platform_device rk29_device_backlight = {
 	}
 };
 
-/*MMA8452 gsensor*/
-#if defined (CONFIG_GS_MMA8452)
-#define MMA8452_INT_PIN   RK30_PIN0_PB7
-
-static int mma8452_init_platform_hw(void)
-{
-	return 0;
-}
-
-static struct sensor_platform_data mma8452_info = {
-	.type = SENSOR_TYPE_ACCEL,
-	.irq_enable = 1,
-	.poll_delay_ms = 30,
-        .init_platform_hw = mma8452_init_platform_hw,
-        .orientation = {-1, 0, 0, 0, 0, -1, 0, 1, 0},
-};
-#endif
-#if defined (CONFIG_GS_LIS3DH)
 #define LIS3DH_INT_PIN   RK30_PIN0_PB7
 
 static int lis3dh_init_platform_hw(void)
@@ -325,9 +284,7 @@ static struct sensor_platform_data lis3dh_info = {
 
 };
 
-#endif //(CONFIG_GS_LIS3DH)
 
-#if defined (CONFIG_COMPASS_AK8963)
 static struct sensor_platform_data akm8963_info =
 {
        .type = SENSOR_TYPE_COMPASS,
@@ -362,43 +319,6 @@ static struct sensor_platform_data akm8963_info =
        }
 };
 
-#endif
-
-#if defined (CONFIG_COMPASS_AK8975)
-static struct sensor_platform_data akm8975_info =
-{
-	.type = SENSOR_TYPE_COMPASS,
-	.irq_enable = 1,
-	.poll_delay_ms = 30,
-	.m_layout = 
-	{
-		{
-			{1, 0, 0},
-			{0, 1, 0},
-			{0, 0, 1},
-		},
-
-		{
-			{1, 0, 0},
-			{0, 1, 0},
-			{0, 0, 1},
-		},
-
-		{
-			{1, 0, 0},
-			{0, 1, 0},
-			{0, 0, 1},
-		},
-
-		{
-			{1, 0, 0},
-			{0, 1, 0},
-			{0, 0, 1},
-		},
-	}
-};
-
-#endif
 
 #if defined(CONFIG_MT6229)
 static int mt6229_io_init(void)
@@ -432,14 +352,8 @@ struct platform_device rk29_device_mt6229 = {
     };
 #endif
 
-#if defined(CONFIG_GYRO_L3G4200D)
-
 #include <linux/l3g4200d.h>
-#if defined (CONFIG_PIPO_M6PRO)
-#define L3G4200D_INT_PIN  RK30_PIN1_PA7
-#else
 #define L3G4200D_INT_PIN  RK30_PIN0_PB4
-#endif
 
 static int l3g4200d_init_platform_hw(void)
 {
@@ -456,9 +370,6 @@ static struct sensor_platform_data l3g4200d_info = {
 	.y_min = 40,
 	.z_min = 20,
 };
-
-#endif
-
 
 #define LCD_CS_PIN         RK30_PIN0_PB0
 #define LCD_CS_VALUE       GPIO_HIGH
@@ -1227,25 +1138,7 @@ static int rk_platform_add_display_devices(void)
 
 // i2c
 static struct i2c_board_info __initdata i2c0_info[] = {
-#if defined (CONFIG_SND_SOC_RT5623)
-	{
-		.type			= "rt5623",
-		.addr			= 0x1a,
-		.flags			= 0,
-	},
-#endif
 
-#if defined (CONFIG_GS_MMA8452)
-	{
-		.type	        = "gs_mma8452",
-		.addr	        = 0x1d,
-		.flags	        = 0,
-		.irq	        = MMA8452_INT_PIN,
-		.platform_data = &mma8452_info,
-	},
-#endif
-
-#if defined (CONFIG_GS_LIS3DH)
 	{
 		.type	        = "gs_lis3dh",
 		.addr	        = 0x19,   //0x19(SA0-->VCC), 0x18(SA0-->GND)
@@ -1253,8 +1146,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.irq	        = LIS3DH_INT_PIN,
 		.platform_data = &lis3dh_info,
 	},
-#endif
-#if defined (CONFIG_COMPASS_AK8963)
+
 	{
 		.type          = "ak8963",
 		.addr          = 0x0d,
@@ -1262,20 +1154,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.irq           = RK30_PIN3_PD7,	
 		.platform_data = &akm8963_info,
 	},
-#endif
 
-#if defined (CONFIG_COMPASS_AK8975)
-	{
-		.type          = "ak8975",
-		.addr          = 0x0d,
-		.flags         = 0,
-		.irq           = RK30_PIN3_PD7,	
-		.platform_data = &akm8975_info,
-		.irq           = RK30_PIN3_PD7,	
-		.platform_data = &akm8975_info,
-	},
-#endif
-#if defined (CONFIG_GYRO_L3G4200D)
 	{
 		.type          = "l3g4200d_gryo",
 		.addr          = 0x69,
@@ -1283,25 +1162,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.irq           = L3G4200D_INT_PIN,
 		.platform_data = &l3g4200d_info,
 	},
-#endif
 
-#if defined (CONFIG_GYRO_L3G20D)
-         {
-                 .type          = "l3g20d_gryo",
-                 .addr          = 0x6B,
-                 .flags         = 0,
-                 .irq           = L3G20D_INT_PIN,
-                 .platform_data = &l3g20d_info,
-         },
-#endif
-
-#if defined (CONFIG_SND_SOC_RT5631)
-        {
-                .type                   = "rt5631",
-                .addr                   = 0x1a,
-                .flags                  = 0,
-        },
-#endif
 };
 
 int __sramdata g_pmic_type =  0;
@@ -1466,14 +1327,13 @@ void  rk30_pwm_resume_voltage_set(void)
 
 static struct i2c_board_info __initdata i2c2_info[] = {
 
-#if defined (CONFIG_CT36X_TS) || defined(CONFIG_TOUCHSCREEN_CT36X)
 	{
 		.type	       = CT36X_NAME,
 		.addr          = 0x01,
 		.flags         = 0,
 		.platform_data = &ct36x_info,
 	},
-#endif
+
 
 #if defined(CONFIG_TOUCHSCREEN_GT9XX)
 	{
@@ -1508,21 +1368,11 @@ static struct i2c_board_info __initdata i2c3_info[] = {
 
 static struct i2c_board_info __initdata i2c4_info[] = {
 
-#if defined (CONFIG_SND_SOC_RT5616)
-        {
-                .type                   = "rt5616",
-                .addr                   = 0x1b,
-                .flags                  = 0,
-        },
-#endif
-
-#if defined (CONFIG_SND_SOC_RT5631)
         {
                 .type                   = "rt5631",
                 .addr                   = 0x1a,
                 .flags                  = 0,
         },
-#endif
 
 };
 
