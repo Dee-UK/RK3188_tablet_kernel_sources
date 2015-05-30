@@ -119,7 +119,6 @@ extern int get_harware_version()
 
 //
 #if defined(CONFIG_TOUCHSCREEN_CT36X) || defined(CONFIG_CT36X_TS)
-
 static struct ct36x_platform_data ct36x_info = {
 	.model   = 363,
 	.x_max   = 1920,
@@ -135,7 +134,6 @@ static struct ct36x_platform_data ct36x_info = {
 	.orientation = {1, 0, 0, 1}, //1001 - left/right /up down 1010 xy swap
 
 };
-
 #endif
 
 
@@ -1296,22 +1294,20 @@ static  struct pmu_info  act8846_ldo_info[] = {
  };
 
 #include "../mach-rk30/board-pmu-act8846.c"
-
-
 static struct i2c_board_info __initdata i2c1_info[] = {
 
 	{
-		.type    		= "act8846",
+		.type    	= "act8846",
 		.addr           = 0x5a, 
-		.flags			= 0,
+		.flags		= 0,
 		.irq            = ACT8846_HOST_IRQ,
 		.platform_data=&act8846_data,
 	},
 
 	{
-		.type                   = "rtc_hym8563",
+		.type           = "rtc_hym8563",
 		.addr           = 0x51,
-		.flags                  = 0,
+		.flags          = 0,
 		.irq            = RK30_PIN0_PB5,
 	},
 
@@ -1483,7 +1479,7 @@ static void __init machine_rk30_board_init(void)
 		printk("request for gpio RK30_PIN0_PA3 failed ,ret = %d ! \n",ret);
 		gpio_free(RK30_PIN0_PA3);
 	} else {
-		printk("RK30_PIN0_PA3 successfully initialized");
+		printk("RK30_PIN0_PA3 (PWM_GPIO) successfully initialized\n");
 		gpio_direction_output(RK30_PIN0_PA3, 1);
 		gpio_set_value(RK30_PIN0_PA3, 1);
 	}
@@ -1494,7 +1490,7 @@ static void __init machine_rk30_board_init(void)
 		printk("request for gpio RK30_PIN0_PC3 failed, return code = %d\n",ret);
 		gpio_free(RK30_PIN0_PC3);
 	} else {
-		printk("RK30_PIN0_PC3 successfully initialized");
+		printk("RK30_PIN0_PC3 (OV5640 Sensor Flash) successfully initialized\n");
 		gpio_direction_output(RK30_PIN0_PC3, 1);
 		gpio_set_value(RK30_PIN0_PC3, 1);
 	}
@@ -1504,7 +1500,7 @@ static void __init machine_rk30_board_init(void)
 		printk("request gpio RK30_PIN0_PD4 failed, ret = %d ! \n",ret);
 		gpio_free(RK30_PIN0_PD4);
 	} else {
-		printk("RK30_PIN0_PD4 successfully initialized");
+		printk("RK30_PIN0_PD4 (SPi-Miso) successfully initialized\n");
 		gpio_direction_output(RK30_PIN0_PD4, 1);
 		gpio_set_value(RK30_PIN0_PD4, 1);
 	}
@@ -1514,7 +1510,7 @@ static void __init machine_rk30_board_init(void)
 		printk("request gpio RK30_PIN2_PD4 failed, ret = %d ! \n",ret);
 		gpio_free(RK30_PIN2_PD4);
 	} else {
-		printk("RK30_PIN2_PD4 successfully initialized");
+		printk("RK30_PIN2_PD4 (mmc2?) successfully initialized\n");
 		gpio_direction_output(RK30_PIN2_PD4, 1);
 		gpio_set_value(RK30_PIN2_PD4, 1); 
 	}
@@ -1525,7 +1521,7 @@ static void __init machine_rk30_board_init(void)
 		printk("request for gpio RK30_PIN1_PA7 failed !\n");
 		gpio_free(RK30_PIN1_PA7);
 	} else {
-		printk("RK30_PIN1_PA7 successfully initialized");
+		printk("RK30_PIN1_PA7 (wifi) successfully initialized\n");
 		gpio_direction_input(RK30_PIN1_PA7);
 	}
 

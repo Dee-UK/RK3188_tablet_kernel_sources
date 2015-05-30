@@ -3,7 +3,7 @@ if BLOCK
 menu "IO Schedulers"
 
 config IOSCHED_NOOP
-	bool
+	tristate "No-op I/O scheduler"
 	default y
 	---help---
 	  The no-op I/O scheduler is a minimal scheduler that does basic merging
@@ -11,6 +11,44 @@ config IOSCHED_NOOP
 	  memory devices, and specialised software or hardware environments
 	  that do their own scheduling and require only minimal assistance from
 	  the kernel.
+
+config IOSCHED_SIO
+	tristate "Simple I/O scheduler"
+	default y
+	---help---
+          Simple I/O scheduler aims to keep minimum overhead to achieve low 
+	  latency to serve I/O requests. No priority queues concepts, but only
+	  basic merging. Sio is a mix between noop and deadline. No reordering
+          or sorting of requests. 
+       
+          Adv: simple, reliable; minimized starvation of requests
+	  Dis: slow random-read speeds on flash drives, compared to others;
+	       sequential-read speeds on flash drives not so good
+
+config IOSCHED_VR
+	tristate "V(R) I/O scheduler"
+	default y
+	---help---
+	  Unlike other schedulers, synchronous and asynchronous requests are
+	  not treated separately, instead a deadline is imposed for fairness.
+	  The next request to be served is based on its distance from last
+    	  request.
+	
+	  Adv: Best for benchmarking
+	  Dis: performance fluctuation results in below-average performance
+               at times; least reliable/most unstable
+
+config IOSCHED_ZEN
+	tristate "Zen I/O scheduler"
+	default y
+	---help---
+	  Awfully similar to SIO, although its a bit simpler than SIO 
+          (closer to no-op) and works just slightly different. It is a
+          FCFS (First come, first serve) based algorithm. It is not 
+          strictly FIFO. It does not do any sorting. It uses deadlines 
+          for fairness, and treats synchronous requests with priority 
+          over asynchronous ones. Other than that, pretty much the same 
+          as no-op.
 
 config IOSCHED_DEADLINE
 	tristate "Deadline I/O scheduler"
@@ -36,6 +74,18 @@ config IOSCHED_CFQ
 
 	  Note: If BLK_CGROUP=m, then CFQ can be built only as module.
 
+config IOSCHED_ROW
+	tristate "ROW I/O scheduler"
+	default y
+	---help---
+	  READ over WRITE scheduler. Optimal for mobile devices. Favour
+	  user experience over everything else, thus given READ IO requests
+	  as much priority as possible. In mobile devices, it will not have
+	  AS much parallel threads as on desktops. Usually it is a single 
+	  thread or at most 2 simultaneous working threads for read and
+	  write. Favouring READ requests over WRITEs decreases the READ
+	  latency greatly.
+
 config CFQ_GROUP_IOSCHED
 	bool "CFQ Group Scheduling support"
 	depends on IOSCHED_CFQ && BLK_CGROUP
@@ -45,7 +95,7 @@ config CFQ_GROUP_IOSCHED
 
 choice
 	prompt "Default I/O scheduler"
-	default DEFAULT_CFQ
+	default DEFAULT_NOOP
 	help
 	  Select the I/O scheduler which will be used by default for all
 	  block devices.
@@ -56,8 +106,20 @@ choice
 	config DEFAULT_CFQ
 		bool "CFQ" if IOSCHED_CFQ=y
 
-	config DEFAULT_NOOP
-		bool "No-op"
+        config DEFAULT_SIO
+		bool "SIO" if IOSCHED_SIO=y
+
+	config DEFAULT_VR
+		bool "VR" if IOSCHED_VR=y
+
+	config DEFAULT_ZEN
+                bool "ZEN" if IOSCHED_ZEN=y
+
+	config DEFAULT_ROW
+		bool "ROW" if IOSCHED_ROW=y
+	
+        config DEFAULT_NOOP
+		bool "No-op" if IOSCHED_NOOP=y
 
 endchoice
 
@@ -66,6 +128,10 @@ config DEFAULT_IOSCHED
 	default "deadline" if DEFAULT_DEADLINE
 	default "cfq" if DEFAULT_CFQ
 	default "noop" if DEFAULT_NOOP
+	default "sio" if DEFAULT_SIO
+	default "vr" if DEFAULT_VR
+	default "zen" if DEFAULT_ZEN
+	default "row" if DEFAULT_ROW
 
 endmenu
 
