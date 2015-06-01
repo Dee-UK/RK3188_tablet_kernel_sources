@@ -1,5 +1,5 @@
-#ifndef __LCD_B080XAN02__
-#define __LCD_B080XAN02__
+#ifndef __LCD_PIPO_MIPI_U8__
+#define __LCD_PIPO_MIPI_U8__
 
 #if defined(CONFIG_MIPI_DSI)
 #include "../transmitter/mipi_dsi.h"
@@ -53,8 +53,8 @@
 #define RK_SCREEN_INIT 	1
 
 /* about mipi */
-#define MIPI_DSI_LANE 4
-#define MIPI_DSI_HS_CLK 1000*1000000//528*1000000 //1000*1000000
+#define MIPI_DSI_LANE 			4
+#define MIPI_DSI_HS_CLK 		1000*1000000
 
 #if defined(RK_SCREEN_INIT)
 static struct rk29lcd_info *gLcd_info = NULL;
@@ -65,8 +65,9 @@ static struct rk29lcd_info *gLcd_info = NULL;
 #define dcs_set_display_off  		0x28
 #define dcs_set_display_on  		0x29
 
+#define MIPI_RST_PIN 			RK30_PIN0_PD4
+
 int gTmp = 1;
-#define MIPI_RST_PIN RK30_PIN0_PD4
 int rk_lcd_init(void) {
 
 	int ret = 0;

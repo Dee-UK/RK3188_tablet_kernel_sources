@@ -13,6 +13,48 @@
  *
  */
 
+/* GPIO Pins
+RK30_PIN0_PA5 ap6330_wake_host
+RK30_PIN1_PA3 ap6330_rts
+RK30_PIN3_PB4 camera powerdown
+RK30_PIN3_PB5 camera powerdown
+RK30_PIN3_PC6 ap6330_wake
+*/
+
+#define POWER_ON_PIN 		RK30_PIN0_PA0   //power_hold
+#define PMU_POWER_SLEEP		RK30_PIN0_PA1   //?
+#define BL_EN_PIN         	RK30_PIN0_PA2
+#define PLAY_GPIO		RK30_PIN0_PA4
+#define SSD2828_RST_PIN		RK30_PIN0_PA7
+#define SSD2828_VDDIO_PIN	RK30_PIN0_PB0
+#define ACT8846_HOST_IRQ	RK30_PIN0_PB3
+#define L3G4200D_INT_PIN  	RK30_PIN0_PB4
+#define HYM8563_IRQ_PIN		RK30_PIN1_PA4 //0_PB5
+#define TS_RESET_PIN		RK30_PIN0_PB5 //0_PB6
+#define MMA8452_INT_PIN   	RK30_PIN0_PB7
+#define LIS3DH_INT_PIN   	RK30_PIN0_PB6 //0_PB7
+#define HUB_RST_PIN 		RK30_PIN0_PC2
+#define SSD2828_MISO_PIN	RK30_PIN0_PD4
+#define SSD2828_MOSI_PIN	RK30_PIN0_PD5
+#define SSD2828_SCK_PIN		RK30_PIN0_PD6
+#define SSD2828_CS_PIN		RK30_PIN0_PD7
+#define TS_IRQ_PIN 		RK30_PIN1_PB7
+#define RK_HDMI_POWER_EN_PIN	RK30_PIN2_PD6 //U8T - D33
+#define RK_HDMI_RST_PIN		RK30_PIN3_PB2
+#define PMU_VSEL 		RK30_PIN3_PD3
+#define SSD2828_SHUT_PIN	RK30_PIN3_PD4
+#define AK8963_IRQ_PIN		RK30_PIN3_PD7
+
+/*
+modem_power_en = RK30_PIN0_PC6,
+bp_power = RK30_PIN2_PD5,
+bp_reset = RK30_PIN2_PD5,
+modem_usb_en = RK30_PIN0_PC7, 
+modem_uart_en = RK30_PIN2_PD4,
+bp_wakeup_ap = RK30_PIN0_PC5,
+ap_ready = RK30_PIN0_PC4,
+*/
+
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -100,7 +142,7 @@ static struct rk29_keys_button key_button[] = {
 	{
 		.desc	= "play",
 		.code	= KEY_POWER,
-		.gpio	= RK30_PIN0_PA4, 
+		.gpio	= PLAY_GPIO, 
 		.active_low = PRESS_LEV_LOW,
 		.wakeup	= 1,
 	},
@@ -135,31 +177,11 @@ int get_harware_version()
 }
 EXPORT_SYMBOL_GPL(get_harware_version);
 
-
-#define L3G20D_INT_PIN	RK30_PIN0_PB4
-static int l3g20d_init_platform_hw(void)
-{	
-		return 0;
-}
-
-static struct sensor_platform_data l3g20d_info = {
-		.type = SENSOR_TYPE_GYROSCOPE,
-		.irq_enable = 1,
-		.poll_delay_ms = 0, //30,
-		.orientation = {1, 0, 0, 0, -1, 0, 0, 0, -1},
-		.init_platform_hw = l3g20d_init_platform_hw,
-		.x_min = 40,//x_min,y_min,z_min = (0-100) according to hardware
-		.y_min = 40,
-		.z_min = 20,
-};
-
 #if defined(CONFIG_CT36X_TS)  
 
 #define TOUCH_MODEL		363
 #define TOUCH_MAX_X		768
 #define TOUCH_MAX_y		1024
-#define TOUCH_RESET_PIN		RK30_PIN0_PB6
-#define TOUCH_INT_PIN		RK30_PIN1_PB7
 
 static struct ct36x_platform_data ct36x_info = {
 	.model   = TOUCH_MODEL,
@@ -167,11 +189,11 @@ static struct ct36x_platform_data ct36x_info = {
 	.y_max   = TOUCH_MAX_y,
 
 	.rst_io = {
-		.gpio = TOUCH_RESET_PIN,
+		.gpio = TS_RESET_PIN,
 		.active_low = 1,
 	},
 	.irq_io = {
-		.gpio = TOUCH_INT_PIN,
+		.gpio = TS_IRQ_PIN,
 		.active_low = 1,
 	},
 	.orientation = {1, 0, 0, 1},
@@ -190,11 +212,7 @@ static struct spi_board_info board_spi_devices[] = {
 #define PWM_MODE	  PWM3
 #define PWM_EFFECT_VALUE  1 //D33 - could try 0?
 
-#define BL_EN_PIN         RK30_PIN0_PA2
 #define BL_EN_VALUE       GPIO_HIGH
-
-#define HUB_RST_PIN RK30_PIN0_PC2
-
 
 static int rk29_backlight_io_init(void)
 {
@@ -230,6 +248,10 @@ static int rk29_backlight_io_deinit(void)
 	gpio_free(BL_EN_PIN);
 
 	int pwm_gpio = iomux_mode_to_gpio(PWM_MODE);
+	printk (KERN_INFO "PWM being set to: %d", pwm_gpio);
+	
+	//D33- temporary override of PWM
+	pwm_gpio = RK30_PIN3_PD6;
 
 	ret = gpio_request(pwm_gpio, "bl_pwm");
 	if (ret != 0) {
@@ -302,7 +324,6 @@ static struct platform_device rk29_device_backlight = {
 
  
 /*MMA8452 gsensor*/
-#define MMA8452_INT_PIN   RK30_PIN0_PB7
 
 static int mma8452_init_platform_hw(void)
 {
@@ -318,8 +339,6 @@ static struct sensor_platform_data mma8452_info = {
 };
 
 //LIS3DH config
-#define LIS3DH_INT_PIN   RK30_PIN0_PB7
-
 static int lis3dh_init_platform_hw(void)
 {
 
@@ -422,8 +441,6 @@ struct platform_device rk29_device_mt6229 = {
 #endif
 
 //Gyro config (L3G4200D)
-#define L3G4200D_INT_PIN  RK30_PIN0_PB4
-
 static int l3g4200d_init_platform_hw(void)
 {
 	return 0;
@@ -446,11 +463,11 @@ static struct sensor_platform_data l3g4200d_info = {
 struct ssd2828_t ssd2828_platdata = {
 	.id = 0x2828,
 	.reset = {
-		.reset_pin = RK30_PIN0_PA7,   //RESET PIN (LCD_RST)
+		.reset_pin = SSD2828_RST_PIN,   //RESET PIN (LCD_RST) RK30_PIN0_PD4?
 		.effect_value = GPIO_LOW,
 	},
 	.vddio = {                       //POWER ON (LCD_EN)
-		.enable_pin = RK30_PIN0_PB0,//D33 amend for U8T
+		.enable_pin = SSD2828_VDDIO_PIN,//D33 amend for U8T
 		.effect_value = GPIO_LOW,
 		.name = "ssd2828_vddio",
 		.voltage = 0,
@@ -461,15 +478,15 @@ struct ssd2828_t ssd2828_platdata = {
 		.voltage = 1200000,
 	},	
 	.shut = {                     //SHUT PIN (LCD_CS)
-		.enable_pin = RK30_PIN3_PD4,
+		.enable_pin = SSD2828_SHUT_PIN,
 		.effect_value = GPIO_LOW,
 		.name = "ssd2828_shut",
 	},
 	.spi = {                          
-		.cs = RK30_PIN0_PD7,
-		.sck = RK30_PIN0_PD6,
-		.miso = RK30_PIN0_PD4,
-		.mosi = RK30_PIN0_PD5,
+		.cs = SSD2828_CS_PIN,
+		.sck = SSD2828_SCK_PIN,
+		.miso = SSD2828_MISO_PIN,
+		.mosi = SSD2828_MOSI_PIN,
 	},
 };
 
@@ -698,9 +715,6 @@ static struct platform_device device_lcdc1 = {
 	},
 };
 #endif
-
-#define RK_HDMI_RST_PIN		RK30_PIN3_PB2
-#define RK_HDMI_POWER_EN_PIN	RK30_PIN2_PD6 //U8T - D33
 
 static int rk_hdmi_power_init(void)
 {
@@ -1225,13 +1239,13 @@ static struct platform_device device_rfkill_rk = {
 #if defined(CONFIG_GPS_RK)
 
 #define GPS_SPI_CLK RK30_PIN0_PD6 //low
-#define GPS_SPI_CLK_GPIO GPIO0_D6
+#define GPS_SPI_CLK_GPIO0_D6
 
 #define GPS_SPI_MOSI RK30_PIN0_PD5 //low
-#define GPS_SPI_MOSI_GPIO GPIO0_D5
+#define GPS_SPI_MOSI_GPIO0_D5
 
 #define GPS_SPI_CS RK30_PIN0_PD7 //low
-#define GPS_SPI_CS_GPIO GPIO0_D7
+#define GPS_SPI_CS_GPIO0_D7
 
 //GPS
 int rk_gps_io_init(void)
@@ -1435,7 +1449,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 		.type          = "ak8963",
 		.addr          = 0x0d,
 		.flags         = 0,
-		.irq           = RK30_PIN3_PD7,	
+		.irq           = AK8963_IRQ_PIN,	
 		.platform_data = &akm8963_info,
 	},
 
@@ -1462,35 +1476,31 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 
 int __sramdata g_pmic_type =  0;
 
-#define PMU_POWER_SLEEP		RK30_PIN0_PA1
-#define PMU_VSEL 		RK30_PIN3_PD3
-#define ACT8846_HOST_IRQ	RK30_PIN0_PB3
-
 static struct pmu_info  act8846_dcdc_info[] = {
 	{
-		.name          = "act_dcdc1",   //ddr
-		.min_uv          = 1200000,
-		.max_uv         = 1200000,
-		.suspend_vol  =   1200000,
+		.name		= "act_dcdc1",   //ddr
+		.min_uv		= 1200000,
+		.max_uv		= 1200000,
+		.suspend_vol	= 1200000,
 	},
 	{
-		.name          = "vdd_core",    //logic
-		.min_uv          = 1000000,
-		.max_uv         = 1000000,
+		.name		= "vdd_core",    //logic
+		.min_uv		= 1000000,
+		.max_uv		= 1000000,
 		#ifdef CONFIG_ACT8846_SUPPORT_RESET
-		.suspend_vol  =  1200000,
+		.suspend_vol	= 1200000,
 		#else
-		.suspend_vol  =  900000,
+		.suspend_vol	=  900000,
 		#endif
 	},
 	{
-		.name          = "vdd_cpu",   //arm
-		.min_uv          = 1000000,
+		.name		= "vdd_cpu",   //arm
+		.min_uv		= 1000000,
 		.max_uv         = 1000000,
 		#ifdef CONFIG_ACT8846_SUPPORT_RESET
-		.suspend_vol  =  1200000,
+		.suspend_vol	=  1200000,
 		#else
-		.suspend_vol  =  900000,
+		.suspend_vol	=  900000,
 		#endif
 	},
 	{
@@ -1549,18 +1559,18 @@ static  struct pmu_info  act8846_ldo_info[] = {
 
 static struct i2c_board_info __initdata i2c1_info[] = {
 	{
-		.type    		= "act8846",
+		.type    	= "act8846",
 		.addr           = 0x5a, 
-		.flags			= 0,
+		.flags		= 0,
 		.irq            = ACT8846_HOST_IRQ,
-		.platform_data=&act8846_data,
+		.platform_data	= &act8846_data,
 	},
 
 	{
-		.type                   = "rtc_hym8563",
+		.type           = "rtc_hym8563",
 		.addr           = 0x51,
-		.flags                  = 0,
-		.irq            = RK30_PIN0_PB5,
+		.flags          = 0,
+		.irq            = HYM8563_IRQ_PIN,
 	},
 
 };
@@ -1635,7 +1645,7 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 		.type		= GTP_I2C_NAME ,
         	.addr		= GTP_I2C_ADDR ,
         	.flags		= 0,
-        	.irq		= RK30_PIN1_PB7,
+        	.irq		= TS_IRQ_PIN,
         	//.platform_data = &ts_pdata,
 	},
 #endif
@@ -1645,7 +1655,7 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 		.type		= CT36X_NAME,
 		.addr		= 0x01,
 		.flags		= 0,
-		.irq		= RK30_PIN1_PB7,
+		.irq		= TS_IRQ_PIN,
 		.platform_data	= &ct36x_info,
 	},
 #endif
@@ -1669,7 +1679,7 @@ static struct i2c_board_info __initdata i2c4_info[] = {
 		.type		= "cat66121_hdmi",
 		.addr		= 0x4c,
 		.flags		= 0,
-		.irq		= RK30_PIN2_PD6,
+		.irq		= RK_HDMI_POWER_EN_PIN,
 		.platform_data 	= &rk_hdmi_pdata,
 	},
 
@@ -1716,7 +1726,6 @@ static void __init rk30_i2c_register_board_info(void)
 }
 //end of i2c
 
-#define POWER_ON_PIN RK30_PIN0_PA0   //power_hold
 static void rk30_pm_power_off(void)
 {
 	printk(KERN_ERR "rk30_pm_power_off start...\n");

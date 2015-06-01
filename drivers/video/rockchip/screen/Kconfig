@@ -209,13 +209,15 @@ config LCD_PIPO_MIPI_M9PRO
 
 
 config LCD_PIPO_MIPI_U8
-	bool "Pipo official Ultra U8 mipi dsi lcd"
+	bool "Pipo official Ultra U8T mipi dsi lcd"
+---help---
+	Official Pipo provided B080XAN02 variant used for U8T
 
 config LCD_D33_MIPI_U8
-	bool "D33 Ultra U8 mipi dsi LCD"
+	bool "D33 Ultra U8T mipi dsi LCD"
 
 config LCD_B080XAN02_MIPI
-	bool "mipi dsi lcd B080XAN02 1024X768"	
+	bool "7.9 inch Mipi dsi lcd 768x1024 (AOU B080XAN02)"	
 
 config LCD_RK3168_FAC
         bool "RK3168 for factoryTool"     
