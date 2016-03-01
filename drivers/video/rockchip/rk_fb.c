@@ -1449,8 +1449,8 @@ static int rk_fb_wait_for_vsync_thread(void *data)
 	while (!kthread_should_stop()) {
 		ktime_t timestamp = dev_drv->vsync_info.timestamp;
 		int ret = wait_event_interruptible(dev_drv->vsync_info.wait,
-			!ktime_equal(timestamp, dev_drv->vsync_info.timestamp) &&
-			dev_drv->vsync_info.active || dev_drv->vsync_info.irq_stop);
+			!ktime_equal(timestamp, dev_drv->vsync_info.timestamp)
+			 || dev_drv->vsync_info.irq_stop);
 
 		if (!ret) {
 			sysfs_notify(&fbi->dev->kobj, NULL, "vsync");
@@ -2302,4 +2302,5 @@ static void __exit rk_fb_exit(void)
 
 subsys_initcall_sync(rk_fb_init);
 module_exit(rk_fb_exit);
+
 

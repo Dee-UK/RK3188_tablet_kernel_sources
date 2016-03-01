@@ -49,7 +49,7 @@ struct rtw_wdev_invit_info {
 	} while (0)
 
 struct rtw_wdev_nego_info {
-	u8 state; /* 0: req, 1:rep, 2:conf */
+	u8 state; /* 0: req, 1:rep, 3:conf */
 	u8 peer_mac[ETH_ALEN];
 	u8 active;
 	u8 token;
@@ -107,9 +107,11 @@ struct rtw_wdev_priv
 	
 };
 
-#define wiphy_to_adapter(x) (*((_adapter**)wiphy_priv(x)))
+#define wdev_to_priv(w) ((struct rtw_wdev_priv *)(wdev_priv(w)))
 
-#define wdev_to_ndev(w) ((w)->netdev)
+#define wiphy_to_adapter(x) (_adapter *)(((struct rtw_wdev_priv*)wiphy_priv(x))->padapter)
+
+#define wiphy_to_wdev(x) (struct wireless_dev *)(((struct rtw_wdev_priv*)wiphy_priv(x))->rtw_wdev)
 
 int rtw_wdev_alloc(_adapter *padapter, struct device *dev);
 void rtw_wdev_free(struct wireless_dev *wdev);
@@ -123,7 +125,7 @@ int rtw_cfg80211_check_bss(_adapter *padapter);
 void rtw_cfg80211_ibss_indicate_connect(_adapter *padapter);
 void rtw_cfg80211_indicate_connect(_adapter *padapter);
 void rtw_cfg80211_indicate_disconnect(_adapter *padapter);
-void rtw_cfg80211_indicate_scan_done(_adapter *adapter, bool aborted);
+void rtw_cfg80211_indicate_scan_done(struct rtw_wdev_priv *pwdev_priv, bool aborted);
 
 #ifdef CONFIG_AP_MODE
 void rtw_cfg80211_indicate_sta_assoc(_adapter *padapter, u8 *pmgmt_frame, uint frame_len);

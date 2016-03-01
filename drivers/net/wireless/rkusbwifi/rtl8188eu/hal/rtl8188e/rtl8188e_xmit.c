@@ -19,6 +19,8 @@
  ******************************************************************************/
 #define _RTL8188E_XMIT_C_
 
+#include <drv_conf.h>
+#include <osdep_service.h>
 #include <drv_types.h>
 #include <rtl8188e_hal.h>
 
@@ -215,7 +217,7 @@ void UpdateEarlyModeInfo8188E(struct xmit_priv *pxmitpriv,struct xmit_buf *pxmit
 	//_adapter *padapter, struct xmit_frame *pxmitframe,struct tx_servq	*ptxservq
 	int index,j;
 	u16 offset,pktlen;
-	PTXDESC_8188E ptxdesc;
+	PTXDESC ptxdesc;
 	
 	u8 *pmem,*pEMInfo_mem;
 	s8 node_num_0=0,node_num_1=0;
@@ -265,12 +267,12 @@ void UpdateEarlyModeInfo8188E(struct xmit_priv *pxmitpriv,struct xmit_buf *pxmit
 			
 		if(pmem){
 			if(index==0){
-				ptxdesc = (PTXDESC_8188E)(pmem);
+				ptxdesc = (PTXDESC)(pmem);
 				pEMInfo_mem = ((u8 *)ptxdesc)+TXDESC_SIZE;				
 			}
 			else{
 				pmem = pmem + pxmitpriv->agg_pkt[index-1].offset;
-				ptxdesc = (PTXDESC_8188E)(pmem);
+				ptxdesc = (PTXDESC)(pmem);
 				pEMInfo_mem = ((u8 *)ptxdesc)+TXDESC_SIZE;					
 			}
 			

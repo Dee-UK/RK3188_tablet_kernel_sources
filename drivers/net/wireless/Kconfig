@@ -29,7 +29,6 @@ config WLAN_80211
 config AIDC
     bool "Enable WIFI AIDS(Automatic Identification USB Wifi Type)"
 	depends on RTL8188EU || RTL8192CU || RTL8723AU || RT5370
-	depends on !RK_CHECK_UACCESS
 	default n
 	---help---
 
@@ -70,7 +69,7 @@ choice
 	    A library for Broadcom BCM4319 SDIO WLAN devices. 
 
         config MT6620
-          depends on WLAN_80211 && MMC
+          depends on WLAN_80211 && MMC && MTK_COMBO
           select WIRELESS_EXT
           select WEXT_PRIV
           select IEEE80211
@@ -111,17 +110,14 @@ choice
         select MAC80211
         ---help---
 
-source "drivers/net/wireless/mt5931_kk/Kconfig"
+source "drivers/net/wireless/mt5931/Kconfig"
 source "drivers/net/wireless/rkusbwifi/rtl8192cu/Kconfig"
-source "drivers/net/wireless/rkusbwifi/rtl8192du/Kconfig"
 source "drivers/net/wireless/rkusbwifi/rtl8188eu/Kconfig"
 source "drivers/net/wireless/rkusbwifi/rtl8723au/Kconfig"
-source "drivers/net/wireless/rkusbwifi/rtl8723bu/Kconfig"
 source "drivers/net/wireless/rkusbwifi/rt5370/Kconfig"
 source "drivers/net/wireless/rkusbwifi/mt7601/Kconfig"
 source "drivers/net/wireless/ar6003/Kconfig"
 source "drivers/net/wireless/rtl8723as/Kconfig"
-source "drivers/net/wireless/rtl8723bs/Kconfig"
 source "drivers/net/wireless/esp8089/Kconfig"
 source "drivers/net/wireless/rkwifi/Kconfig"
 endchoice
@@ -151,21 +147,9 @@ choice
 		bool "AP6210"
 		depends on RKWIFI && WLAN_80211
 
-	config AP6234
-		bool "AP6234"
-		depends on RKWIFI
-
 	config AP6330
 		bool "AP6330"
 		depends on RKWIFI && WLAN_80211
-
-	config AP6335
-		bool "AP6335"
-		depends on RKWIFI
-
-	config AP6441
-		bool "AP6441"
-		depends on RKWIFI
 
 	config AP6476
 		bool "AP6476"
@@ -207,6 +191,7 @@ menuconfig MTK_WIRELESS_SOLUTION
 
 if MTK_WIRELESS_SOLUTION
 source "drivers/net/wireless/combo_mt66xx/Kconfig"
+source "drivers/net/wireless/mt5931_kk/Kconfig"
 endif # MTK_WIRELESS_SOLUTION
 
 endif

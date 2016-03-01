@@ -1900,7 +1900,7 @@ kalQoSFrameClassifierAndPacketInfo (
     OUT PUINT_8 pucNetworkType
 );
 
-VOID
+inline VOID
 kalOidComplete (
     IN P_GLUE_INFO_T prGlueInfo,
     IN BOOLEAN fgSetQuery,

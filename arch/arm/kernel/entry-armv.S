@@ -211,6 +211,10 @@ __irq_svc:
 	str	r7, [tsk, #TI_PREEMPT]
 #endif
 
+#ifdef CONFIG_TRACE_IRQFLAGS
+	bl	trace_hardirqs_off
+#endif
+
 	irq_handler
 #ifdef CONFIG_PREEMPT
 	str	r8, [tsk, #TI_PREEMPT]		@ restore preempt count

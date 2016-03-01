@@ -102,6 +102,8 @@ extern int memblock_memory_can_coalesce(phys_addr_t addr1, phys_addr_t size1,
  */
 extern void memblock_set_current_limit(phys_addr_t limit);
 
+phys_addr_t memblock_get_current_limit(void);
+
 
 /*
  * pfn conversion functions

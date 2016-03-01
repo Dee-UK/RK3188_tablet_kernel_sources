@@ -5289,8 +5289,8 @@ wl_cfg80211_send_action_frame(struct wiphy *wiphy, struct net_device *dev,
 			// terence 20130721: send hang event to wpa_supplicant
 			cnt++;
 			if (cnt > 2) {
-				//WL_ERR(("Send hang event\n"));
-				//net_os_send_hang_message(dev_tmp);
+				WL_ERR(("Send hang event\n"));
+				net_os_send_hang_message(dev_tmp);
 				cnt = 0;
 			}
 			goto exit;
@@ -10715,9 +10715,6 @@ static s32 __wl_cfg80211_up(struct wl_priv *wl)
 #endif /* WL_HOST_BAND_MGMT */
 	struct net_device *ndev = wl_to_prmry_ndev(wl);
 	struct wireless_dev *wdev = ndev->ieee80211_ptr;
-#if defined(WL_CFG80211) && defined(WL_ENABLE_P2P_IF)
-	struct net_device *p2p_net = wl->p2p_net;
-#endif /* WL_CFG80211 && WL_ENABLE_P2P_IF */
 
 	WL_DBG(("In\n"));
 
@@ -10762,11 +10759,6 @@ static s32 __wl_cfg80211_up(struct wl_priv *wl)
 #endif /* DHCP_SCAN_SUPPRESS */
 	INIT_DELAYED_WORK(&wl->pm_enable_work, wl_cfg80211_work_handler);
 	wl_set_drv_status(wl, READY, ndev);
-//gwl
-#if defined(WL_CFG80211) && defined(WL_ENABLE_P2P_IF)
-		if (p2p_net)
-			dev_open(p2p_net);
-#endif /* WL_CFG80211 && WL_ENABLE_P2P_IF */
 	return err;
 }
 

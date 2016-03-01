@@ -119,9 +119,8 @@ bcmsdh_chipmatch(uint16 vendor, uint16 device)
 int bcmsdh_probe(struct device *dev);
 int bcmsdh_remove(struct device *dev);
 
-//mark to fix conflict between 4.2 and 4.4.
-//EXPORT_SYMBOL(bcmsdh_probe);
-//EXPORT_SYMBOL(bcmsdh_remove);
+EXPORT_SYMBOL(bcmsdh_probe);
+EXPORT_SYMBOL(bcmsdh_remove);
 
 #else
 /* forward declarations */

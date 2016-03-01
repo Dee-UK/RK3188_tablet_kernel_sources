@@ -20,6 +20,10 @@
 #ifndef __RTL8188E_LED_H__
 #define __RTL8188E_LED_H__
 
+#include <drv_conf.h>
+#include <osdep_service.h>
+#include <drv_types.h>
+
 
 //================================================================================
 // Interface to manipulate LED objects.
@@ -29,6 +33,7 @@ void rtl8188eu_InitSwLeds(PADAPTER padapter);
 void rtl8188eu_DeInitSwLeds(PADAPTER padapter);
 #endif
 #ifdef CONFIG_PCI_HCI
+void rtl8188ee_gen_RefreshLedState(PADAPTER Adapter);
 void rtl8188ee_InitSwLeds(PADAPTER padapter);
 void rtl8188ee_DeInitSwLeds(PADAPTER padapter);
 #endif

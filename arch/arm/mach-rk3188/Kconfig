@@ -64,3 +64,32 @@ config MACH_RK3188_FAC
         select MACH_RK_FAC
 
 endchoice
+
+choice
+	prompt "Custom RK3188 frequencies by str0ntium-9o.
+	depends on PIPO_M9PRO
+        help 
+                Provides opportunity to choose maximum frequency for CPU
+
+config M9_PRO_STR_STANDART_FREQ
+	bool "Standart RK3188 frequency"
+	depends on PIPO_M9PRO
+	default y
+	help
+		Standart RK3188 frequency 1600 MHz
+
+config M9_PRO_STR_CPU_OC
+	bool "Enable CPU overclock to 1700 MHz"
+	depends on PIPO_M9PRO
+	default n
+	help
+		RK3188 1700 MHz max frequency
+
+config M9_PRO_STR_CPU_ULV
+	bool "Enable CPU downclock to 1400 MHz"
+	depends on PIPO_M9PRO
+	default n
+	help
+		RK3188 1400 MHz max frequency
+
+endchoice

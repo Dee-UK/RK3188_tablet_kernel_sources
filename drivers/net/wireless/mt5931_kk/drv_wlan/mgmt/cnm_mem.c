@@ -677,17 +677,11 @@ cnmMemAlloc (
         }
     }
 
-	KAL_RELEASE_SPIN_LOCK(prAdapter,
-        eRamType == RAM_TYPE_MSG ? SPIN_LOCK_MSG_BUF : SPIN_LOCK_MGT_BUF);
-
 #ifdef LINUX
     pvMemory = (PVOID)kalMemAlloc(u4Length, VIR_MEM_TYPE);
 #else
     pvMemory = (PVOID)NULL;
 #endif
-
-KAL_ACQUIRE_SPIN_LOCK(prAdapter,
-	eRamType == RAM_TYPE_MSG ? SPIN_LOCK_MSG_BUF : SPIN_LOCK_MGT_BUF);
 
 #if CFG_DBG_MGT_BUF
     prBufInfo->u4AllocNullCount++;
@@ -696,6 +690,7 @@ KAL_ACQUIRE_SPIN_LOCK(prAdapter,
         prAdapter->u4MemAllocDynamicCount++;
     }
 #endif
+
     KAL_RELEASE_SPIN_LOCK(prAdapter,
         eRamType == RAM_TYPE_MSG ? SPIN_LOCK_MSG_BUF : SPIN_LOCK_MGT_BUF);
 

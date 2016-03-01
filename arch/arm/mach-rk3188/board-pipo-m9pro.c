@@ -1644,7 +1644,11 @@ static void __init rk30_reserve(void)
  */
 
 // ds1006h 10'
+#ifdef CONFIG_M9_PRO_STR_STANDART_FREQ
+
 static struct cpufreq_frequency_table dvfs_arm_table_volt_level2[] = {
+        {.frequency = 160 * 1000,       .index = 780 * 1000},
+        {.frequency = 280 * 1000,       .index = 850 * 1000},
         {.frequency = 312 * 1000,       .index = 900 * 1000},
         {.frequency = 504 * 1000,       .index = 925 * 1000},
         {.frequency = 816 * 1000,       .index = 1000 * 1000},
@@ -1654,6 +1658,38 @@ static struct cpufreq_frequency_table dvfs_arm_table_volt_level2[] = {
         {.frequency = 1608 * 1000,      .index = 1350 * 1000},
         {.frequency = CPUFREQ_TABLE_END},
 };
+#endif
+
+#ifdef CONFIG_M9_PRO_STR_CPU_OC
+static struct cpufreq_frequency_table dvfs_arm_table_volt_level2[] = {
+        {.frequency = 160 * 1000,       .index = 780 * 1000},
+        {.frequency = 280 * 1000,       .index = 850 * 1000},
+        {.frequency = 312 * 1000,       .index = 900 * 1000},
+        {.frequency = 504 * 1000,       .index = 925 * 1000},
+        {.frequency = 816 * 1000,       .index = 1000 * 1000},
+        {.frequency = 1008 * 1000,      .index = 1075 * 1000},
+        {.frequency = 1200 * 1000,      .index = 1200 * 1000},
+        {.frequency = 1416 * 1000,      .index = 1250 * 1000},
+        {.frequency = 1608 * 1000,      .index = 1350 * 1000},
+        {.frequency = 1708 * 1000,      .index = 1440 * 1000},
+        {.frequency = CPUFREQ_TABLE_END},
+};
+#endif
+
+#ifdef CONFIG_M9_PRO_STR_CPU_ULV
+static struct cpufreq_frequency_table dvfs_arm_table_volt_level2[] = {
+        {.frequency = 160 * 1000,       .index = 780 * 1000},
+        {.frequency = 280 * 1000,       .index = 850 * 1000},
+        {.frequency = 312 * 1000,       .index = 900 * 1000},
+        {.frequency = 504 * 1000,       .index = 925 * 1000},
+        {.frequency = 816 * 1000,       .index = 1000 * 1000},
+        {.frequency = 1008 * 1000,      .index = 1075 * 1000},
+        {.frequency = 1200 * 1000,      .index = 1200 * 1000},
+        {.frequency = 1416 * 1000,      .index = 1250 * 1000},
+        {.frequency = CPUFREQ_TABLE_END},
+};
+#endif
+
 #define dvfs_arm_table dvfs_arm_table_volt_level2
 
 /******************************** gpu dvfs frequency volt table **********************************/

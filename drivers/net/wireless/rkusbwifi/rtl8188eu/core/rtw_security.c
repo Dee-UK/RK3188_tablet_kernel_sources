@@ -19,30 +19,12 @@
  ******************************************************************************/
 #define  _RTW_SECURITY_C_
 
+#include <drv_conf.h>
+#include <osdep_service.h>
 #include <drv_types.h>
+#include <wifi.h>
+#include <osdep_intf.h>
 
-static const char *_security_type_str[] = {
-	"N/A",
-	"WEP40",
-	"TKIP",
-	"TKIP_WM",
-	"AES",
-	"WEP104",
-	"SMS4",
-	"WEP_WPA",
-	"BIP",
-};
-
-const char *security_type_str(u8 value)
-{
-#ifdef CONFIG_IEEE80211W
-	if (value <= _BIP_)
-#else
-	if (value <= _WEP_WPA_MIXED_)
-#endif
-		return _security_type_str[value];
-	return NULL;
-}
 
 //=====WEP related===== 
 
@@ -680,7 +662,7 @@ u32	rtw_tkip_encrypt(_adapter *padapter, u8 *pxmitframe)
 
 	u8	*pframe, *payload,*iv,*prwskey;
 	union pn48 dot11txpn;
-	//struct	sta_info		*stainfo;
+	struct	sta_info		*stainfo;
 	struct	pkt_attrib	 *pattrib = &((struct xmit_frame *)pxmitframe)->attrib;
 	struct 	security_priv	*psecuritypriv=&padapter->securitypriv;
 	struct	xmit_priv		*pxmitpriv=&padapter->xmitpriv;
@@ -705,7 +687,6 @@ _func_enter_;
 	//4 start to encrypt each fragment
 	if(pattrib->encrypt==_TKIP_){
 
-/*
 		if(pattrib->psta)
 		{
 			stainfo = pattrib->psta;
@@ -715,16 +696,15 @@ _func_enter_;
 			DBG_871X("%s, call rtw_get_stainfo()\n", __func__);
 			stainfo=rtw_get_stainfo(&padapter->stapriv ,&pattrib->ra[0] );
 		}	
-*/	
-		//if (stainfo!=NULL)
-		{
-/*
+		
+		if (stainfo!=NULL){
+
 			if(!(stainfo->state &_FW_LINKED))
 			{
 				DBG_871X("%s, psta->state(0x%x) != _FW_LINKED\n", __func__, stainfo->state);
 				return _FAIL;
 			}
-*/			
+			
 			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_tkip_encrypt: stainfo!=NULL!!!\n"));
 
 			if(IS_MCAST(pattrib->ra))
@@ -733,8 +713,7 @@ _func_enter_;
 			}
 			else
 			{
-				//prwskey=&stainfo->dot118021x_UncstKey.skey[0];
-				prwskey=pattrib->dot118021x_UncstKey.skey;
+				prwskey=&stainfo->dot118021x_UncstKey.skey[0];
 			}
 
 			prwskeylen=16;
@@ -777,13 +756,11 @@ _func_enter_;
 
 
 		}
-/*
 		else{
 			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_tkip_encrypt: stainfo==NULL!!!\n"));
                         DBG_871X("%s, psta==NUL\n", __func__);
 			res=_FAIL;
 		}
-*/		
 						
 	}
 _func_exit_;	
@@ -1266,7 +1243,7 @@ _func_enter_;
 #ifdef CONFIG_IEEE80211W
     //802.11w management frame don't AND subtype bits 4,5,6 of frame control field
     if(frtype == WIFI_MGT_TYPE)
-		mic_header1[2] = mpdu[0];
+		mic_header1[2] = mpdu[0];    /* Mute CF poll & CF ack bits */
 	else
 #endif //CONFIG_IEEE80211W
 		mic_header1[2] = mpdu[0] & 0xcf;    /* Mute CF poll & CF ack bits */
@@ -1616,7 +1593,7 @@ u32	rtw_aes_encrypt(_adapter *padapter, u8 *pxmitframe)
 	u32	prwskeylen;
 	u8	*pframe,*prwskey;	//, *payload,*iv
 	u8   hw_hdr_offset = 0;
-	//struct	sta_info		*stainfo=NULL;
+	struct	sta_info		*stainfo;
 	struct	pkt_attrib	 *pattrib = &((struct xmit_frame *)pxmitframe)->attrib;
 	struct 	security_priv	*psecuritypriv=&padapter->securitypriv;
 	struct	xmit_priv		*pxmitpriv=&padapter->xmitpriv;
@@ -1643,7 +1620,7 @@ _func_enter_;
 
 	//4 start to encrypt each fragment
 	if((pattrib->encrypt==_AES_)){
-/*
+
 		if(pattrib->psta)
 		{
 			stainfo = pattrib->psta;
@@ -1653,16 +1630,15 @@ _func_enter_;
 			DBG_871X("%s, call rtw_get_stainfo()\n", __func__);
 			stainfo=rtw_get_stainfo(&padapter->stapriv ,&pattrib->ra[0] );
 		}
-*/		
-		//if (stainfo!=NULL)
-		{
-/*
+		
+		if (stainfo!=NULL){
+
 			if(!(stainfo->state &_FW_LINKED))
 			{
 				DBG_871X("%s, psta->state(0x%x) != _FW_LINKED\n", __func__, stainfo->state);
 				return _FAIL;
 			}
-*/
+			
 			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_aes_encrypt: stainfo!=NULL!!!\n"));
 
 			if(IS_MCAST(pattrib->ra))
@@ -1671,8 +1647,7 @@ _func_enter_;
 			}
 			else
 			{
-				//prwskey=&stainfo->dot118021x_UncstKey.skey[0];
-				prwskey=pattrib->dot118021x_UncstKey.skey;
+				prwskey=&stainfo->dot118021x_UncstKey.skey[0];
 			}
 
 #ifdef CONFIG_TDLS	//swencryption
@@ -1708,13 +1683,12 @@ _func_enter_;
 
 
 		}
-/*
 		else{
 			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_aes_encrypt: stainfo==NULL!!!\n"));
-			DBG_871X("%s, psta==NUL\n", __func__);
+                        DBG_871X("%s, psta==NUL\n", __func__);
 			res=_FAIL;
 		}
-*/						
+						
 	}
 
 
@@ -1816,7 +1790,7 @@ _func_enter_;
                                 pframe,
                                 pn_vector,
                                 i+1,
-                                frtype // add for CONFIG_IEEE80211W, none 11w also can use
+                                frtype
                             );
 
         aes128k128d(key, ctr_preload, aes_out);
@@ -2009,7 +1983,6 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 
 
 	sint 		length;
-	u32	prwskeylen;
 	u8	*pframe,*prwskey;	//, *payload,*iv
 	struct	sta_info		*stainfo;
 	struct	rx_pkt_attrib	 *prxattrib = &((union recv_frame *)precvframe)->u.hdr.attrib;
@@ -2937,9 +2910,8 @@ int omac1_aes_128(u8 *key, u8 *data, size_t data_len, u8 *mac)
 #endif //PLATFORM_FREEBSD Baron
 
 #ifdef CONFIG_TDLS
-void wpa_tdls_generate_tpk(_adapter *padapter, PVOID sta)
+void wpa_tdls_generate_tpk(_adapter *padapter, struct sta_info *psta)
 {
-	struct sta_info *psta = (struct sta_info *)sta;
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	u8 *SNonce = psta->SNonce;
 	u8 *ANonce = psta->ANonce;
@@ -3107,9 +3079,23 @@ int tdls_verify_mic(u8 *kck, u8 trans_seq,
 }
 #endif //CONFIG_TDLS
 
-void rtw_use_tkipkey_handler(RTW_TIMER_HDL_ARGS)
+#ifdef PLATFORM_WINDOWS
+void rtw_use_tkipkey_handler (
+	IN	PVOID					SystemSpecific1,
+	IN	PVOID					FunctionContext,
+	IN	PVOID					SystemSpecific2,
+	IN	PVOID					SystemSpecific3
+	)
+#endif
+#ifdef PLATFORM_LINUX
+void rtw_use_tkipkey_handler(void *FunctionContext)
+#endif
+#ifdef PLATFORM_FREEBSD
+void rtw_use_tkipkey_handler(void *FunctionContext)
+#endif
 {
         _adapter *padapter = (_adapter *)FunctionContext;
+
 
 _func_enter_;			
 

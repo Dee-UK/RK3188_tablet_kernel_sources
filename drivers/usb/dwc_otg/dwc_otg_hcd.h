@@ -634,6 +634,10 @@ static inline uint16_t dwc_micro_frame_num (uint16_t _frame)
 	return (_frame) & 0x7;
 }
 
+void dwc_otg_hcd_save_data_toggle(dwc_hc_t * hc,
+				  dwc_otg_hc_regs_t * hc_regs,
+				  dwc_otg_qtd_t * qtd);
+
 #ifdef DEBUG
 /**
  * Macro to sample the remaining PHY clocks left in the current frame. This
@@ -672,3 +676,4 @@ static inline uint16_t dwc_micro_frame_num (uint16_t _frame)
 #endif		
 #endif
 #endif /* DWC_DEVICE_ONLY */
+

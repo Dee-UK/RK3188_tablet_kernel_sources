@@ -2252,7 +2252,7 @@ wlanNetCreate(
     init_completion(&prGlueInfo->rScanComp);
     init_completion(&prGlueInfo->rHaltComp);
     init_completion(&prGlueInfo->rPendComp);
-#if 0//LINUX_VERSION_CODE < KERNEL_VERSION(2, 3, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 3, 0)
 	init_completion(&prGlueInfo->rMgmtTxComp);
 	atomic_set(&prGlueInfo->rMgmtTxAto, 0);
 #endif
@@ -3129,19 +3129,6 @@ static VOID __exit exitWlan(void)
 
     return;
 } /* end of exitWlan() */
-
-int rockchip_wifi_init_module(void)
-{
-	initWlan();
-}
-
-int rockchip_wifi_exit_module(void)
-{
-	//exitWlan();
-}
-
-EXPORT_SYMBOL(rockchip_wifi_init_module);
-EXPORT_SYMBOL(rockchip_wifi_exit_module);
 
 module_init(initWlan);
 module_exit(exitWlan);

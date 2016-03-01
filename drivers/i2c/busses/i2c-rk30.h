@@ -31,9 +31,9 @@
 #else
 #define i2c_dbg(dev, format, arg...)
 #endif
-
+#if !defined(CONFIG_MINIX_NEOX7_WORKAROUNDS)
 #define I2C_CHECK_IDLE
-
+#endif
 #define i2c_writel                 writel_relaxed
 #define i2c_readl                  readl_relaxed
 
@@ -50,7 +50,7 @@
 #if defined(CONFIG_ARCH_RK30) || defined(CONFIG_ARCH_RK3188)
 #define GRF_I2C_CON_BASE            (RK30_GRF_BASE + GRF_SOC_CON1)
 #endif
-#if defined(CONFIG_ARCH_RK2928) || defined(CONFIG_ARCH_RK3026)
+#ifdef CONFIG_ARCH_RK2928
 #define GRF_I2C_CON_BASE            (RK2928_GRF_BASE + GRF_SOC_CON1)
 #endif
 #define I2C_ADAP_SEL_BIT(nr)        ((nr) + 11)

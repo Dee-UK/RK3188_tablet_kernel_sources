@@ -1203,6 +1203,7 @@ static void rcu_do_batch(struct rcu_state *rsp, struct rcu_data *rdp)
 	 * races with call_rcu() from interrupt handlers.
 	 */
 	local_irq_save(flags);
+        WARN_ON_ONCE(cpu_is_offline(smp_processor_id()));    
 	list = rdp->nxtlist;
 	rdp->nxtlist = *rdp->nxttail[RCU_DONE_TAIL];
 	*rdp->nxttail[RCU_DONE_TAIL] = NULL;

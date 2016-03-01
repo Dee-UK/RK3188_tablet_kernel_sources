@@ -55,3 +55,4 @@ struct hym8563_platform_data {
 };
 
 #endif  /*_DRIVERS_HYM8563_H*/
+

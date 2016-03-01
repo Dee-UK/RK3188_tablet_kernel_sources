@@ -18,6 +18,8 @@
  *
  ******************************************************************************/
 
+#include <drv_conf.h>
+#include <osdep_service.h>
 #include <drv_types.h>
 #include <rtl8188e_hal.h>
 
@@ -39,10 +41,10 @@
 //	Description:
 //		Turn on LED according to LedPin specified.
 //
-static void
-SwLedOn_8188EU(
+void
+SwLedOn(
 	_adapter			*padapter, 
-	PLED_USB		pLed
+	PLED_871x		pLed
 )
 {
 	u8	LedCfg;
@@ -76,16 +78,16 @@ SwLedOn_8188EU(
 //	Description:
 //		Turn off LED according to LedPin specified.
 //
-static void
-SwLedOff_8188EU(
+void
+SwLedOff(
 	_adapter			*padapter, 
-	PLED_USB		pLed
+	PLED_871x		pLed
 )
 {
 	u8	LedCfg;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 
-	if(padapter->bSurpriseRemoved == _TRUE)
+	if((padapter->bSurpriseRemoved == _TRUE) || ( padapter->bDriverStopped == _TRUE))	
 	{
 		goto exit;
 	}
@@ -143,14 +145,11 @@ rtl8188eu_InitSwLeds(
 {
 	struct led_priv *pledpriv = &(padapter->ledpriv);
 
-	pledpriv->LedControlHandler = LedControlUSB;
+	pledpriv->LedControlHandler = LedControl871x;
 
-	pledpriv->SwLedOn = SwLedOn_8188EU;
-	pledpriv->SwLedOff = SwLedOff_8188EU;
+	InitLed871x(padapter, &(pledpriv->SwLed0), LED_PIN_LED0);
 
-	InitLed(padapter, &(pledpriv->SwLed0), LED_PIN_LED0);
-
-	InitLed(padapter, &(pledpriv->SwLed1), LED_PIN_LED1);
+	InitLed871x(padapter,&(pledpriv->SwLed1), LED_PIN_LED1);
 }
 
 
@@ -165,7 +164,7 @@ rtl8188eu_DeInitSwLeds(
 {
 	struct led_priv	*ledpriv = &(padapter->ledpriv);
 
-	DeInitLed( &(ledpriv->SwLed0) );
-	DeInitLed( &(ledpriv->SwLed1) );
+	DeInitLed871x( &(ledpriv->SwLed0) );
+	DeInitLed871x( &(ledpriv->SwLed1) );
 }
 

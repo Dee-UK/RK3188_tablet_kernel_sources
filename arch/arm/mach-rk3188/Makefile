@@ -1,4 +1,4 @@
-EXTRA_CFLAGS += -Os
+EXTRA_CFLAGS += -O1
 ifneq ($(CONFIG_RK_FPGA),y)
 obj-y += ../plat-rk/clock.o
 obj-y += clock_data.o

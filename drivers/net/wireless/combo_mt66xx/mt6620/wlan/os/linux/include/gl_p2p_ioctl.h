@@ -695,13 +695,14 @@ mtk_p2p_cfg80211_mgmt_tx(
     u64 *cookie
     );
 
-#endif
 int
 mtk_p2p_cfg80211_mgmt_tx_cancel_wait (
     struct wiphy *wiphy,
     struct net_device *ndev,
     u64 cookie
     );
+
+#endif
 
 
 int
